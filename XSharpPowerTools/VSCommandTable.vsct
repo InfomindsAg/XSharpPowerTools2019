@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+  <Include href="KnownImageIds.vsct"/>
+  <Include href="VSGlobals.vsct"/>
+
+  <Commands package="XSharpPowerTools">
+    <Groups>
+      <Group guid="XSharpPowerTools" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="VSMainMenu" id="Tools"/>
+      </Group>
+      <Group guid="XSharpPowerTools" id="MyContextMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+      </Group>
+      <Group guid="XSharpPowerTools" id="MySubMenuGroup" priority="0x0600">
+        <Parent guid="XSharpPowerTools" id="MySubMenu"/>
+      </Group>
+    </Groups>
+
+    <Menus>
+      <Menu guid="XSharpPowerTools" id="MySubMenu" type="Menu" priority="0x0600">
+        <Parent guid="XSharpPowerTools" id="MyMenuGroup"/>
+        <Strings>
+          <ButtonText>X# Power Toys</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+    
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <Button guid="XSharpPowerTools" id="CodeBrowserCommand" priority="0x0100" type="Button">
+        <Parent guid="XSharpPowerTools" id="MyContextMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="Search" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>X# Code Browser</ButtonText>
+          <LocCanonicalName>.XSharpPowerTools.CodeBrowserCommand</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="XSharpPowerTools" id="FindNamespaceCommand" priority="0x0100" type="Button">
+        <Parent guid="XSharpPowerTools" id="MyContextMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="Search" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>X# Find Namespace</ButtonText>
+          <LocCanonicalName>.XSharpPowerTools.FindNamespaceCommand</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="XSharpPowerTools" id="CodeBrowserCommand" priority="0x0100" type="Button">
+        <Parent guid="XSharpPowerTools" id="MySubMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="Search" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>X# Code Browser</ButtonText>
+          <LocCanonicalName>.XSharpPowerTools.CodeBrowserCommand</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="XSharpPowerTools" id="FindNamespaceCommand" priority="0x0100" type="Button">
+        <Parent guid="XSharpPowerTools" id="MySubMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="Search" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>X# Find Namespace</ButtonText>
+          <LocCanonicalName>.XSharpPowerTools.FindNamespaceCommand</LocCanonicalName>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <KeyBindings>
+    <KeyBinding guid="XSharpPowerTools" id="CodeBrowserCommand" editor="guidVSStd97" key1="1" mod1="Control" key2="2" mod2="Control" />
+    <KeyBinding guid="XSharpPowerTools" id="FindNamespaceCommand" editor="guidVSStd97" key1="2" mod1="Control" key2="2" mod2="Control" />
+  </KeyBindings>
+
+  <VisibilityConstraints>
+    <VisibilityItem guid="XSharpPowerTools" id="CodeBrowserCommand"  context="UIContextGuid"/>
+    <VisibilityItem guid="XSharpPowerTools" id="FindNamespaceCommand"  context="UIContextGuid"/>
+  </VisibilityConstraints>
+    
+  <Symbols>
+    <GuidSymbol name="XSharpPowerTools" value="{24100142-dc8c-4a86-a29b-99bbaf6bab3c}">
+      <IDSymbol name="MyMenuGroup" value="0x0001" />
+      <IDSymbol name="MySubMenu" value="0x0002" />
+      <IDSymbol name="MySubMenuGroup" value="0x0003"/>
+      <IDSymbol name="MyContextMenuGroup" value="0x0004"/>
+      <IDSymbol name="CodeBrowserCommand" value="0x0100" />
+      <IDSymbol name="FindNamespaceCommand" value="0x0110" />
+    </GuidSymbol>
+    <GuidSymbol name="UIContextGuid" value="{10534154-102D-46E2-ABA8-A6BFA25BA0BE}" />
+  </Symbols>
+</CommandTable>

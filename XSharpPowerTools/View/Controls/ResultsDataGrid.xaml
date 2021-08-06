@@ -1,0 +1,34 @@
+﻿<DataGrid 
+    x:Class="XSharpPowerTools.View.Controls.ResultsDataGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:XSharpPowerTools.View.Controls"
+    mc:Ignorable="d"
+    MaxHeight="180"
+    VerticalAlignment="Stretch"
+    HorizontalAlignment="Stretch"
+    SelectionMode="Single"
+    AutoGenerateColumns="False"
+    IsReadOnly="True"
+    CanUserSortColumns="False"
+    HeadersVisibility="Column"
+    HorizontalScrollBarVisibility="Hidden"
+    KeyboardNavigation.TabNavigation="None">
+
+    <DataGrid.Resources>
+        <ResourceDictionary Source="../VsThemeDictionary.xaml"/>
+    </DataGrid.Resources>
+
+    <DataGrid.Style>
+        <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource ResourceKey=GenericDataGrid}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}}" Value="0">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </DataGrid.Style>
+    
+</DataGrid>
