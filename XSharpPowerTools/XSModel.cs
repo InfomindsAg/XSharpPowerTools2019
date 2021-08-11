@@ -56,7 +56,7 @@ namespace XSharpPowerTools
                 ";
 
                 command.CommandText += searchTerm.Trim().StartsWith("p ")
-                    ? " AND Kind = 9 OR Kind = 10 LIMIT 100"
+                    ? " AND (Kind = 9 OR Kind = 10) LIMIT 100"
                     : " AND Kind = 23 LIMIT 100";
 
                 searchTerm = searchTerm.Trim().Substring(2).Trim();
@@ -92,14 +92,14 @@ namespace XSharpPowerTools
             }
             else if (!string.IsNullOrWhiteSpace(currentFile) && (searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")))
             {
-                var methodName = searchTerm.Trim().Substring(2).Trim();
-                if (string.IsNullOrWhiteSpace(methodName))
+                var memberName = searchTerm.Trim().Substring(2).Trim();
+                if (string.IsNullOrWhiteSpace(memberName))
                     return (null, 0);
 
-                methodName = methodName.Replace("_", @"\_");
-                methodName = methodName.ToLower().Replace("*", "%");
-                if (!methodName.Contains("\""))
-                    methodName = "%" + methodName + "%";
+                memberName = memberName.Replace("_", @"\_");
+                memberName = memberName.ToLower().Replace("*", "%");
+                if (!memberName.Contains("\""))
+                    memberName = "%" + memberName + "%";
 
                 command.CommandText =
                     @"
@@ -110,12 +110,12 @@ namespace XSharpPowerTools
                 				         WHERE LOWER(TRIM(FileName))=$fileName
                 				         AND LOWER(Sourcecode) LIKE '%class%'
                                          AND Kind = 1)
-                        AND LOWER(Name) LIKE $methodName  ESCAPE '\'
-                        AND Kind = 5
+                        AND LOWER(Name) LIKE $memberName  ESCAPE '\'
+                        AND (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
                         LIMIT 100
                     ";
 
-                command.Parameters.AddWithValue("$methodName", methodName).SqliteType = SqliteType.Text;
+                command.Parameters.AddWithValue("$memberName", memberName).SqliteType = SqliteType.Text;
                 command.Parameters.AddWithValue("$fileName", currentFile.Trim().ToLower()).SqliteType = SqliteType.Text;
 
                 var reader = await command.ExecuteReaderAsync();
@@ -142,8 +142,8 @@ namespace XSharpPowerTools
             }
             else
             {
-                var (className, methodName) = SearchTermHelper.EvaluateSearchTerm(searchTerm);
-                if (string.IsNullOrWhiteSpace(methodName))
+                var (className, memberName) = SearchTermHelper.EvaluateSearchTerm(searchTerm);
+                if (string.IsNullOrWhiteSpace(memberName))
                 {
                     className = className.Replace("_", @"\_");
 
@@ -182,17 +182,17 @@ namespace XSharpPowerTools
                 }
                 else
                 {
-                    methodName = methodName.Replace("_", @"\_");
+                    memberName = memberName.Replace("_", @"\_");
                     className = className.Replace("_", @"\_");
 
                     command.CommandText =
                     @"
                         SELECT Name, FileName, StartLine, TypeName, ProjectFileName
                         FROM ProjectMembers 
-                        WHERE LOWER(TRIM(Name)) LIKE $methodName ESCAPE '\'
-                        AND Kind = 5
+                        WHERE LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
+                        AND (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
                     ";
-                    command.Parameters.AddWithValue("$methodName", methodName.Trim().ToLower());
+                    command.Parameters.AddWithValue("$memberName", memberName.Trim().ToLower());
 
                     if (!string.IsNullOrWhiteSpace(className))
                     {
