@@ -40,7 +40,6 @@ namespace XSharpPowerTools.View.Windows
 
 
             var results = await XSModel.GetContainingNamespaceAsync(searchTerm.Trim());
-            results = results.OrderBy(q => q.ClassName.Length).ThenBy(q => q.ClassName).ToList();
             ResultsDataGrid.ItemsSource = results;
             ResultsDataGrid.SelectedItem = results.FirstOrDefault();
 

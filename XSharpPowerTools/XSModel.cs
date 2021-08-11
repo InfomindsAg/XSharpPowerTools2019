@@ -52,12 +52,13 @@ namespace XSharpPowerTools
                 @"
                     SELECT Name, FileName, StartLine, TypeName, ProjectFileName
                     FROM ProjectMembers 
-                    WHERE LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
-                ";
+                    WHERE";
 
                 command.CommandText += searchTerm.Trim().StartsWith("p ")
-                    ? " AND (Kind = 9 OR Kind = 10) LIMIT 100"
-                    : " AND Kind = 23 LIMIT 100";
+                    ? " (Kind = 9 OR Kind = 10)"
+                    : " Kind = 23";
+
+                command.CommandText += @" AND LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\' ORDER BY LENGTH(TRIM(Name)), TRIM(Name) LIMIT 100";
 
                 searchTerm = searchTerm.Trim().Substring(2).Trim();
                 searchTerm = searchTerm.Replace("_", @"\_");
@@ -107,11 +108,12 @@ namespace XSharpPowerTools
                         FROM ProjectMembers
                         WHERE IdType IN (SELECT Id
                 				         FROM ProjectTypes
-                				         WHERE LOWER(TRIM(FileName))=$fileName
+                				         WHERE Kind = 1
                 				         AND LOWER(Sourcecode) LIKE '%class%'
-                                         AND Kind = 1)
-                        AND LOWER(Name) LIKE $memberName  ESCAPE '\'
+                                         AND LOWER(TRIM(FileName))=$fileName)
                         AND (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
+                        AND LOWER(Name) LIKE $memberName  ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
 
@@ -151,9 +153,10 @@ namespace XSharpPowerTools
                     @"
                         SELECT Name, FileName, StartLine, ProjectFileName
                         FROM ProjectTypes 
-                        WHERE LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        WHERE Kind = 1
                         AND LOWER(Sourcecode) LIKE '%class%'
-                        AND Kind = 1
+                        AND LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
                     command.Parameters.AddWithValue("$className", className.Trim().ToLower());
@@ -189,8 +192,8 @@ namespace XSharpPowerTools
                     @"
                         SELECT Name, FileName, StartLine, TypeName, ProjectFileName
                         FROM ProjectMembers 
-                        WHERE LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
-                        AND (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
+                        WHERE (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
+                        AND LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
                     ";
                     command.Parameters.AddWithValue("$memberName", memberName.Trim().ToLower());
 
@@ -199,7 +202,7 @@ namespace XSharpPowerTools
                         command.CommandText += @" AND LOWER(TRIM(TypeName)) LIKE $className  ESCAPE '\'";
                         command.Parameters.AddWithValue("$className", className.Trim().ToLower());
                     }
-                    command.CommandText += " LIMIT 100";
+                    command.CommandText += " ORDER BY LENGTH(TRIM(Name)), TRIM(Name) LIMIT 100";
 
                     var reader = await command.ExecuteReaderAsync();
 
@@ -237,9 +240,10 @@ namespace XSharpPowerTools
                     @"
                         SELECT DISTINCT Name, Namespace
                         FROM AssemblyTypes 
-                        WHERE LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
-                        AND Namespace IS NOT NULL
+                        WHERE Namespace IS NOT NULL
                         AND trim(Namespace) != ''
+                        AND LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
             searchTerm = searchTerm.Replace("_", @"\_");

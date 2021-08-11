@@ -59,10 +59,6 @@ namespace XSharpPowerTools.View.Windows
                 return;
             }
 
-            results = resultType == XSModelResultType.Type
-                ? results.OrderBy(q => q.TypeName.Length).ThenBy(q => q.TypeName).ToList()
-                : results.OrderBy(q => q.MemberName.Length).ThenBy(q => q.MemberName).ThenBy(q => q.TypeName.Length).ThenBy(q => q.TypeName).ToList();
-
             ResultsDataGrid.ItemsSource = results;
             ResultsDataGrid.SelectedItem = results.FirstOrDefault();
             SetTableColumns(resultType);
