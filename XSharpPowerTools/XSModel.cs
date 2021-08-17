@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using XSharpPowerTools.Helpers;
 
@@ -19,6 +20,7 @@ namespace XSharpPowerTools
         public string TypeName { get; set; }
         public string MemberName { get; set; }
         public string ContainingFile { get; set; }
+        public string Project { get; set; }
         public int Line { get; set; }
 
         public string RelativePath =>
@@ -81,6 +83,7 @@ namespace XSharpPowerTools
                             ContainingFile = reader.GetString(1),
                             Line = reader.GetInt32(2),
                             TypeName = reader.GetString(3),
+                            Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                             ResultType = XSModelResultType.Member,
                             SolutionDirectory = solutionDirectory
                         };
@@ -125,7 +128,7 @@ namespace XSharpPowerTools
                 var results = new List<XSModelResultItem>();
                 while (await reader.ReadAsync())
                 {
-                    if (!reader.GetString(3).Trim().EndsWith("(OrphanedFiles).xsproj"))
+                    if (!reader.GetString(4).Trim().EndsWith("(OrphanedFiles).xsproj"))
                     {
                         var resultItem = new XSModelResultItem
                         {
@@ -133,6 +136,7 @@ namespace XSharpPowerTools
                             ContainingFile = reader.GetString(1),
                             Line = reader.GetInt32(2),
                             TypeName = reader.GetString(3),
+                            Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                             ResultType = XSModelResultType.Member,
                             SolutionDirectory = solutionDirectory
                         };
@@ -174,6 +178,7 @@ namespace XSharpPowerTools
                                 MemberName = string.Empty,
                                 ContainingFile = reader.GetString(1),
                                 Line = reader.GetInt32(2),
+                                Project = Path.GetFileNameWithoutExtension(reader.GetString(3)),
                                 ResultType = XSModelResultType.Type,
                                 SolutionDirectory = solutionDirectory
                             };
@@ -217,6 +222,7 @@ namespace XSharpPowerTools
                                 ContainingFile = reader.GetString(1),
                                 Line = reader.GetInt32(2),
                                 TypeName = reader.GetString(3),
+                                Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                                 ResultType = XSModelResultType.Member,
                                 SolutionDirectory = solutionDirectory
                             };

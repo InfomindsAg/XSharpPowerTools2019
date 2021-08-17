@@ -10,7 +10,8 @@
         <local:ResultsDataGrid
             x:Name="ResultsDataGrid"
             Width="Auto"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            CanUserSortColumns="True">
             <DataGrid.Columns>
                 <DataGridTextColumn
                         Header=" Member"
@@ -20,6 +21,10 @@
                         Header=" Type"
                         Width="*"
                         Binding="{Binding TypeName}"/>
+                <DataGridTextColumn
+                        Header=" Project"
+                        Width="*"
+                        Binding="{Binding Project}"/>
                 <DataGridTextColumn
                         Header=" File"
                         Width="*"

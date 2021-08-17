@@ -129,6 +129,10 @@
                         Width="*"
                         Binding="{Binding TypeName}"/>
                     <DataGridTextColumn
+                        Header=" Project"
+                        Width="*"
+                        Binding="{Binding Project}"/>
+                    <DataGridTextColumn
                         Header=" File"
                         Width="*"
                         Binding="{Binding RelativePath}"/>
