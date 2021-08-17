@@ -24,7 +24,7 @@ namespace XSharpPowerTools.View.Windows
             base.OnDeactivated(e);
             try
             {
-                Close();
+                //Close();
             }
             catch (InvalidOperationException)
             { }

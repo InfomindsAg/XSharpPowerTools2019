@@ -90,9 +90,7 @@
                 x:Name="ResultsDataGrid"
                 Margin="0,0,0,0"
                 Grid.Row="2"
-                Grid.Column="1"
-                MouseDoubleClick="ResultsDataGrid_MouseDoubleClick"
-                PreviewKeyDown="ResultsDataGrid_PreviewKeyDown">
+                Grid.Column="1">
                 <DataGrid.Columns>
                     <DataGridTextColumn 
                         Header=" Class"

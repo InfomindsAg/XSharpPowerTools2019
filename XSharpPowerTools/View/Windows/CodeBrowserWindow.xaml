@@ -65,6 +65,7 @@
                         </Style>
                     </RowDefinition.Style>
                 </RowDefinition>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5" />
@@ -117,8 +118,6 @@
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 Width="Auto"
-                MouseDoubleClick="ResultsDataGrid_MouseDoubleClick"
-                PreviewKeyDown="ResultsDataGrid_PreviewKeyDown"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <DataGrid.Columns>
                     <DataGridTextColumn
@@ -135,6 +134,14 @@
                         Binding="{Binding RelativePath}"/>
                 </DataGrid.Columns>
             </controls:ResultsDataGrid>
+            <CheckBox
+                x:Name="SaveResultsCheckBox"
+                Margin="0,0,0,5"
+                Grid.Row="5"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Content="Save results"
+                Style="{StaticResource ResourceKey=GenericCheckBox}"/>
         </Grid>
     </Border>
     

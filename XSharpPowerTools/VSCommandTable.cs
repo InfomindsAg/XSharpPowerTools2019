@@ -17,6 +17,9 @@ namespace XSharpPowerTools
 
         public const string UIContextGuidString = "10534154-102d-46e2-aba8-a6bfa25ba0be";
         public static Guid UIContextGuid = new Guid(UIContextGuidString);
+
+        public const string CodeBrowserResultsToolWindowGuidString = "d3b3ebd9-87d1-41cd-bf84-268d88953417";
+        public static Guid CodeBrowserResultsToolWindowGuid = new Guid(CodeBrowserResultsToolWindowGuidString);
     }
     /// <summary>
     /// Helper class that encapsulates all CommandIDs uses across VS Package.

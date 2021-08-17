@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="XSharpPowerTools.View.Controls.ToolWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:XSharpPowerTools.View.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <local:ResultsDataGrid
+            x:Name="ResultsDataGrid"
+            Width="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                        Header=" Member"
+                        Width="*"
+                        Binding="{Binding MemberName}"/>
+                <DataGridTextColumn
+                        Header=" Type"
+                        Width="*"
+                        Binding="{Binding TypeName}"/>
+                <DataGridTextColumn
+                        Header=" File"
+                        Width="*"
+                        Binding="{Binding RelativePath}"/>
+            </DataGrid.Columns>
+        </local:ResultsDataGrid>
+    </Grid>
+</UserControl>

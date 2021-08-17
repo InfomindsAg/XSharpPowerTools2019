@@ -16,8 +16,8 @@ namespace XSharpPowerTools.Helpers
         public static async Task OpenProjectItemAtAsync(string file, int lineNumber)
         {
             var editorWindow = await VS.Documents.IsOpenAsync(file)
-                ? await VS.Windows.FindWindowAsync(file)
-                : await VS.Documents.OpenViaProjectAsync(file) ?? await VS.Documents.OpenAsync(file);
+                ? await VS.Windows.FindDocumentWindowAsync(file)
+                : (await VS.Documents.OpenViaProjectAsync(file))?.WindowFrame ?? (await VS.Documents.OpenAsync(file))?.WindowFrame;
 
             if (editorWindow == null)
             {
@@ -27,7 +27,7 @@ namespace XSharpPowerTools.Helpers
 
             await editorWindow.ShowAsync();
 
-            var textView = await VS.Documents.GetTextViewAsync(file);
+            var textView = (await VS.Documents.GetDocumentViewAsync(file))?.TextView;
             var lineIndex = lineNumber > 0 ? lineNumber - 1 : 0;
             var line = textView.TextSnapshot.Lines.ElementAt(lineIndex);
             textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(line.Start, line.End));
@@ -37,8 +37,11 @@ namespace XSharpPowerTools.Helpers
 
         public static async Task InsertUsingAsync(string namespaceRef)
         {
-            var textView = await VS.Documents.GetCurrentTextViewAsync();
+            var textView = (await VS.Documents.GetActiveDocumentViewAsync())?.TextView;
             var usings = new List<ITextSnapshotLine>();
+
+            if (textView == null)
+                return;
 
             foreach (var line in textView.TextSnapshot.Lines)
             {
@@ -81,7 +84,7 @@ namespace XSharpPowerTools.Helpers
 
         public static async Task<string> GetEditorSearchTermAsync()
         {
-            var textView = await VS.Documents.GetCurrentTextViewAsync();
+            var textView = (await VS.Documents.GetActiveDocumentViewAsync())?.TextView;
             return textView?.Selection == null
                 ? string.Empty
                 : !textView.Selection.IsEmpty ? textView.Selection.VirtualSelectedSpans[0].GetText() : string.Empty;
@@ -89,7 +92,7 @@ namespace XSharpPowerTools.Helpers
 
         public static async Task<string> GetCurrentFileAsync()
         {
-            var currentDocument = await VS.Documents.GetCurrentDocumentAsync();
+            var currentDocument = await VS.Documents.GetActiveDocumentViewAsync();
             return currentDocument?.FilePath;
         }
     }
