@@ -35,13 +35,21 @@ namespace XSharpPowerTools.Helpers
             textView.VisualElement.Focus();
         }
 
-        public static async Task InsertUsingAsync(string namespaceRef)
+        public static async Task InsertUsingAsync(string namespaceRef, XSModel xsModel)
         {
-            var textView = (await VS.Documents.GetActiveDocumentViewAsync())?.TextView;
+            var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+            var fileName = documentView?.FilePath;
+            var textView = documentView?.TextView;
             var usings = new List<ITextSnapshotLine>();
 
             if (textView == null)
                 return;
+
+            if (await xsModel.FileContainsUsingAsync(fileName, namespaceRef))
+            {
+                await VS.MessageBox.ShowAsync("Using with given namespace already found in current document.");
+                return;
+            }
 
             foreach (var line in textView.TextSnapshot.Lines)
             {
@@ -49,7 +57,10 @@ namespace XSharpPowerTools.Helpers
                 if (lineText.StartsWith("using"))
                 {
                     if (lineText.Split(' ').ElementAtOrDefault(1) == namespaceRef)
+                    {
+                        await VS.MessageBox.ShowAsync("Using with given namespace already found in current document.");
                         return;
+                    }
                     usings.Add(line);
                 }
                 else

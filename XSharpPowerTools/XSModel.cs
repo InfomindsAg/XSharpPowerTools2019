@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using XSharpPowerTools.Helpers;
 
@@ -268,6 +269,26 @@ namespace XSharpPowerTools
             }
             Connection.Close();
             return results;
+        }
+
+        public async Task<bool> FileContainsUsingAsync(string file, string usingToInsert) 
+        {
+            if (string.IsNullOrWhiteSpace(file) || string.IsNullOrWhiteSpace(usingToInsert))
+                return false;
+
+            await Connection.OpenAsync();
+            var command = Connection.CreateCommand();
+            command.CommandText =
+                @"
+                    SELECT Usings
+					FROM Files
+					WHERE TRIM(FileName) = $fileName
+                ";
+            command.Parameters.AddWithValue("$fileName", file.Trim().ToLower());
+
+            var result = await command.ExecuteScalarAsync() as string;
+            var usings = result.Split(new[] { '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return usings.Contains(usingToInsert);
         }
 
         public void CloseConnection()
