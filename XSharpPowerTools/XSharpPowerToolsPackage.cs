@@ -16,7 +16,7 @@ namespace XSharpPowerTools
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.XSharpPowerToolsString)]
     [ProvideBindingPath]
-    [ProvideToolWindow(typeof(CodeBrowserResultsToolWindow.Pane), Style = VsDockStyle.Linked, Window = WindowGuids.FindAdvanced)]
+    [ProvideToolWindow(typeof(CodeBrowserResultsToolWindow.Pane), Style = VsDockStyle.Linked, Window = WindowGuids.ErrorList)]
     //[ProvideToolWindowVisibility(typeof(CodeBrowserResultsToolWindow.Pane), VSConstants.UICONTEXT.NoSolution_string)]
     public sealed class XSharpPowerToolsPackage : ToolkitPackage
     {
