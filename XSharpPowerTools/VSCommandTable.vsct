@@ -74,10 +74,10 @@
     </Buttons>
   </Commands>
 
-  <KeyBindings>
+  <!--<KeyBindings>
     <KeyBinding guid="XSharpPowerTools" id="CodeBrowserCommand" editor="guidVSStd97" key1="1" mod1="Control" key2="2" mod2="Control" />
     <KeyBinding guid="XSharpPowerTools" id="FindNamespaceCommand" editor="guidVSStd97" key1="2" mod1="Control" key2="2" mod2="Control" />
-  </KeyBindings>
+  </KeyBindings>-->
 
   <VisibilityConstraints>
     <VisibilityItem guid="XSharpPowerTools" id="CodeBrowserCommand"  context="UIContextGuid"/>
