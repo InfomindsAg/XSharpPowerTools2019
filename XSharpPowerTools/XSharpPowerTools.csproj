@@ -49,6 +49,7 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\FindNamespaceCommand.cs" />
     <Compile Include="Helpers\DocumentHelper.cs" />
+    <Compile Include="Helpers\WpfScreen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\CodeBrowserCommand.cs" />
     <Compile Include="View\Controls\IResultsDataGridParent.cs" />
