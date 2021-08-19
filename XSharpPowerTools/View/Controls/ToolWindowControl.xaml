@@ -6,12 +6,19 @@
              xmlns:local="clr-namespace:XSharpPowerTools.View.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:Results x:Key="Results"/>
+        <CollectionViewSource x:Key="CvsResults" Source="{StaticResource Results}"/>
+    </UserControl.Resources>
     <Grid>
         <local:ResultsDataGrid
             x:Name="ResultsDataGrid"
             Width="Auto"
+            Height="Auto"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            CanUserSortColumns="True">
+            CanUserSortColumns="True"
+            MaxHeight="Infinity"
+            ItemsSource="{Binding Source={StaticResource CvsResults}}">
             <DataGrid.Columns>
                 <DataGridTextColumn
                         Header=" Member"
@@ -21,10 +28,6 @@
                         Header=" Type"
                         Width="*"
                         Binding="{Binding TypeName}"/>
-                <DataGridTextColumn
-                        Header=" Project"
-                        Width="*"
-                        Binding="{Binding Project}"/>
                 <DataGridTextColumn
                         Header=" File"
                         Width="*"

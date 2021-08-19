@@ -17,7 +17,6 @@ namespace XSharpPowerTools
     [Guid(PackageGuids.XSharpPowerToolsString)]
     [ProvideBindingPath]
     [ProvideToolWindow(typeof(CodeBrowserResultsToolWindow.Pane), Style = VsDockStyle.Linked, Window = WindowGuids.ErrorList)]
-    //[ProvideToolWindowVisibility(typeof(CodeBrowserResultsToolWindow.Pane), VSConstants.UICONTEXT.NoSolution_string)]
     public sealed class XSharpPowerToolsPackage : ToolkitPackage
     {
         public static XSharpPowerToolsPackage Instance { get; private set; }

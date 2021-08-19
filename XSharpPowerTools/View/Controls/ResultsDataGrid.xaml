@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:XSharpPowerTools.View.Controls"
     mc:Ignorable="d"
-    MaxHeight="180"
+    MaxHeight="350"
     VerticalAlignment="Stretch"
     HorizontalAlignment="Stretch"
     SelectionMode="Single"
@@ -30,5 +30,32 @@
             </Style.Triggers>
         </Style>
     </DataGrid.Style>
+
+    <DataGrid.GroupStyle>
+        <GroupStyle>
+            <GroupStyle.ContainerStyle>
+                <Style TargetType="{x:Type GroupItem}">
+                    <Setter Property="Margin" Value="0,0,0,5"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                <Expander IsExpanded="True" BorderThickness="1" Style="{StaticResource ResourceKey=DataGridGroupExpander}">
+                                    <Expander.Header>
+                                        <DockPanel>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" Margin="5,0,0,0" Width="100"/>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Path=ItemCount}"/>
+                                        </DockPanel>
+                                    </Expander.Header>
+                                    <Expander.Content>
+                                        <ItemsPresenter />
+                                    </Expander.Content>
+                                </Expander>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </GroupStyle.ContainerStyle>
+        </GroupStyle>
+    </DataGrid.GroupStyle>
     
 </DataGrid>

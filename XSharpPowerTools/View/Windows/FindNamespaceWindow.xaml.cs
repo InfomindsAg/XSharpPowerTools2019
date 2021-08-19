@@ -58,7 +58,7 @@ namespace XSharpPowerTools.View.Windows
             Close();
         }
 
-        private void SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (AllowReturn && e.Key == Key.Return)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,9 @@ using XSharpPowerTools.Helpers;
 
 namespace XSharpPowerTools.View.Controls
 {
+    public class Results : List<XSModelResultItem> //required for DataBinding for grouping
+    { }
+
     /// <summary>
     /// Interaction logic for ToolWindowControl.xaml
     /// </summary>
@@ -29,6 +33,8 @@ namespace XSharpPowerTools.View.Controls
 
         public void OnReturn(object selectedItem) 
         {
+            if (selectedItem == null)
+                return;
             var item = selectedItem as XSModelResultItem;
             _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
             {
@@ -36,10 +42,20 @@ namespace XSharpPowerTools.View.Controls
             });
         }
 
-        public void UpdateToolWindowContents(XSModelResultType resultType, IEnumerable<XSModelResultItem> results) 
+        public void UpdateToolWindowContents(XSModelResultType resultType, List<XSModelResultItem> results)
         {
             SetTableColumns(resultType);
-            ResultsDataGrid.ItemsSource = results;
+
+            var _results = Resources["Results"] as Results;
+            _results.Clear();
+            _results.AddRange(results);
+
+            var cvResults = CollectionViewSource.GetDefaultView(ResultsDataGrid.ItemsSource);
+            if (cvResults != null && cvResults.CanGroup)
+            {
+                cvResults.GroupDescriptions.Clear();
+                cvResults.GroupDescriptions.Add(new PropertyGroupDescription("Project"));
+            }
         }
 
         private void SetTableColumns(XSModelResultType resultType) => 

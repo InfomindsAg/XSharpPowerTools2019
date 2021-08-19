@@ -12,15 +12,12 @@ namespace XSharpPowerTools.View.Windows
 {
     public class CodeBrowserResultsToolWindow : BaseToolWindow<CodeBrowserResultsToolWindow>
     {
-        public override string GetTitle(int toolWindowId) => "X# Code Browser results";
+        public override string GetTitle(int toolWindowId) => "X# Code Browser Results";
 
         public override Type PaneType => typeof(Pane);
 
-        public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken)
-        {
-            await System.Threading.Tasks.Task.Delay(2000); // Long running async task
-            return new ToolWindowControl();
-        }
+        public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken) =>
+            new ToolWindowControl();
 
         // Give this a new unique guid
         [Guid("d3b3ebd9-87d1-41cd-bf84-268d88953417")]

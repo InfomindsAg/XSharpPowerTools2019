@@ -12,14 +12,10 @@ namespace XSharpPowerTools.View.Controls
         public ResultsDataGrid()
         {
             InitializeComponent();
-            PreviewKeyDown += ResultsDataGrid_PreviewKeyDown;
             MouseDoubleClick += ResultsDataGrid_MouseDoubleClick;
         }
 
-        private void ResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
-            Parent?.OnReturn(SelectedItem);
-
-        private void ResultsDataGrid_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e) => 
+        protected void ResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
             Parent?.OnReturn(SelectedItem);
 
         public void SelectNext()
