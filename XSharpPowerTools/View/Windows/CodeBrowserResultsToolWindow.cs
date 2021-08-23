@@ -16,8 +16,12 @@ namespace XSharpPowerTools.View.Windows
 
         public override Type PaneType => typeof(Pane);
 
-        public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken) =>
-            new ToolWindowControl();
+        public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken) 
+        {
+            var toolWindowControl = new ToolWindowControl();
+            VS.Events.SolutionEvents.OnBeforeCloseSolution += toolWindowControl.SolutionEvents_OnBeforeCloseSolution;
+            return toolWindowControl;
+        }
 
         // Give this a new unique guid
         [Guid("d3b3ebd9-87d1-41cd-bf84-268d88953417")]

@@ -62,5 +62,8 @@ namespace XSharpPowerTools.View.Controls
             ResultsDataGrid.Columns.First().Visibility = resultType == XSModelResultType.Member
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+        public void SolutionEvents_OnBeforeCloseSolution() => 
+            UpdateToolWindowContents(XSModelResultType.Member, new List<XSModelResultItem>());
     }
 }
