@@ -12,14 +12,14 @@ namespace XSharpPowerTools.View.Controls
             InitializeComponent();
 
             HelpTextLabel.Content =
-@"example      - searches after classes with names similar to 'example'
-ex1.ex2       - searches after methods similar to 'ex2' within classes similar to 'ex1' (""."" equal to "":"")
-.example     - searches after methods 'example' within all classes
-..example    - searches after methods 'example' within current document
+@"example      - searches for classes with names similar to 'example'
+ex1.ex2       - searches for members similar to 'ex2' within classes similar to 'ex1' (""."" equal to "":"")
+.example     - searches for members 'example' within all classes
+..example    - searches for members 'example' within current document
 " + "\"example\"" + @"   - matches whole word only
 ex*Model    - * is a placeholder for multiple characters
-p example   - searches after procedures/functions similar to 'example'
-d example   - searches after defines similar to 'example'";
+p example   - searches for procedures/functions similar to 'example'
+d example   - searches for defines similar to 'example'";
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using XSharpPowerTools.Helpers;
 
@@ -19,6 +21,7 @@ namespace XSharpPowerTools
         public string TypeName { get; set; }
         public string MemberName { get; set; }
         public string ContainingFile { get; set; }
+        public string Project { get; set; }
         public int Line { get; set; }
 
         public string RelativePath =>
@@ -52,12 +55,13 @@ namespace XSharpPowerTools
                 @"
                     SELECT Name, FileName, StartLine, TypeName, ProjectFileName
                     FROM ProjectMembers 
-                    WHERE LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
-                ";
+                    WHERE";
 
                 command.CommandText += searchTerm.Trim().StartsWith("p ")
-                    ? " AND Kind = 9 OR Kind = 10 LIMIT 100"
-                    : " AND Kind = 23 LIMIT 100";
+                    ? " (Kind = 9 OR Kind = 10)"
+                    : " Kind = 23";
+
+                command.CommandText += @" AND LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\' ORDER BY LENGTH(TRIM(Name)), TRIM(Name) LIMIT 100";
 
                 searchTerm = searchTerm.Trim().Substring(2).Trim();
                 searchTerm = searchTerm.Replace("_", @"\_");
@@ -80,6 +84,7 @@ namespace XSharpPowerTools
                             ContainingFile = reader.GetString(1),
                             Line = reader.GetInt32(2),
                             TypeName = reader.GetString(3),
+                            Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                             ResultType = XSModelResultType.Member,
                             SolutionDirectory = solutionDirectory
                         };
@@ -92,14 +97,14 @@ namespace XSharpPowerTools
             }
             else if (!string.IsNullOrWhiteSpace(currentFile) && (searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")))
             {
-                var methodName = searchTerm.Trim().Substring(2).Trim();
-                if (string.IsNullOrWhiteSpace(methodName))
+                var memberName = searchTerm.Trim().Substring(2).Trim();
+                if (string.IsNullOrWhiteSpace(memberName))
                     return (null, 0);
 
-                methodName = methodName.Replace("_", @"\_");
-                methodName = methodName.ToLower().Replace("*", "%");
-                if (!methodName.Contains("\""))
-                    methodName = "%" + methodName + "%";
+                memberName = memberName.Replace("_", @"\_");
+                memberName = memberName.ToLower().Replace("*", "%");
+                if (!memberName.Contains("\""))
+                    memberName = "%" + memberName + "%";
 
                 command.CommandText =
                     @"
@@ -107,15 +112,16 @@ namespace XSharpPowerTools
                         FROM ProjectMembers
                         WHERE IdType IN (SELECT Id
                 				         FROM ProjectTypes
-                				         WHERE LOWER(TRIM(FileName))=$fileName
+                				         WHERE Kind = 1
                 				         AND LOWER(Sourcecode) LIKE '%class%'
-                                         AND Kind = 1)
-                        AND LOWER(Name) LIKE $methodName  ESCAPE '\'
-                        AND Kind = 5
+                                         AND LOWER(TRIM(FileName))=$fileName)
+                        AND (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
+                        AND LOWER(Name) LIKE $memberName  ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
 
-                command.Parameters.AddWithValue("$methodName", methodName).SqliteType = SqliteType.Text;
+                command.Parameters.AddWithValue("$memberName", memberName).SqliteType = SqliteType.Text;
                 command.Parameters.AddWithValue("$fileName", currentFile.Trim().ToLower()).SqliteType = SqliteType.Text;
 
                 var reader = await command.ExecuteReaderAsync();
@@ -123,7 +129,7 @@ namespace XSharpPowerTools
                 var results = new List<XSModelResultItem>();
                 while (await reader.ReadAsync())
                 {
-                    if (!reader.GetString(3).Trim().EndsWith("(OrphanedFiles).xsproj"))
+                    if (!reader.GetString(4).Trim().EndsWith("(OrphanedFiles).xsproj"))
                     {
                         var resultItem = new XSModelResultItem
                         {
@@ -131,6 +137,7 @@ namespace XSharpPowerTools
                             ContainingFile = reader.GetString(1),
                             Line = reader.GetInt32(2),
                             TypeName = reader.GetString(3),
+                            Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                             ResultType = XSModelResultType.Member,
                             SolutionDirectory = solutionDirectory
                         };
@@ -142,8 +149,8 @@ namespace XSharpPowerTools
             }
             else
             {
-                var (className, methodName) = SearchTermHelper.EvaluateSearchTerm(searchTerm);
-                if (string.IsNullOrWhiteSpace(methodName))
+                var (className, memberName) = SearchTermHelper.EvaluateSearchTerm(searchTerm);
+                if (string.IsNullOrWhiteSpace(memberName))
                 {
                     className = className.Replace("_", @"\_");
 
@@ -151,9 +158,10 @@ namespace XSharpPowerTools
                     @"
                         SELECT Name, FileName, StartLine, ProjectFileName
                         FROM ProjectTypes 
-                        WHERE LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        WHERE Kind = 1
                         AND LOWER(Sourcecode) LIKE '%class%'
-                        AND Kind = 1
+                        AND LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
                     command.Parameters.AddWithValue("$className", className.Trim().ToLower());
@@ -171,6 +179,7 @@ namespace XSharpPowerTools
                                 MemberName = string.Empty,
                                 ContainingFile = reader.GetString(1),
                                 Line = reader.GetInt32(2),
+                                Project = Path.GetFileNameWithoutExtension(reader.GetString(3)),
                                 ResultType = XSModelResultType.Type,
                                 SolutionDirectory = solutionDirectory
                             };
@@ -182,24 +191,24 @@ namespace XSharpPowerTools
                 }
                 else
                 {
-                    methodName = methodName.Replace("_", @"\_");
+                    memberName = memberName.Replace("_", @"\_");
                     className = className.Replace("_", @"\_");
 
                     command.CommandText =
                     @"
                         SELECT Name, FileName, StartLine, TypeName, ProjectFileName
                         FROM ProjectMembers 
-                        WHERE LOWER(TRIM(Name)) LIKE $methodName ESCAPE '\'
-                        AND Kind = 5
+                        WHERE (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
+                        AND LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
                     ";
-                    command.Parameters.AddWithValue("$methodName", methodName.Trim().ToLower());
+                    command.Parameters.AddWithValue("$memberName", memberName.Trim().ToLower());
 
                     if (!string.IsNullOrWhiteSpace(className))
                     {
                         command.CommandText += @" AND LOWER(TRIM(TypeName)) LIKE $className  ESCAPE '\'";
                         command.Parameters.AddWithValue("$className", className.Trim().ToLower());
                     }
-                    command.CommandText += " LIMIT 100";
+                    command.CommandText += " ORDER BY LENGTH(TRIM(Name)), TRIM(Name) LIMIT 100";
 
                     var reader = await command.ExecuteReaderAsync();
 
@@ -214,6 +223,7 @@ namespace XSharpPowerTools
                                 ContainingFile = reader.GetString(1),
                                 Line = reader.GetInt32(2),
                                 TypeName = reader.GetString(3),
+                                Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                                 ResultType = XSModelResultType.Member,
                                 SolutionDirectory = solutionDirectory
                             };
@@ -237,9 +247,10 @@ namespace XSharpPowerTools
                     @"
                         SELECT DISTINCT Name, Namespace
                         FROM AssemblyTypes 
-                        WHERE LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
-                        AND Namespace IS NOT NULL
+                        WHERE Namespace IS NOT NULL
                         AND trim(Namespace) != ''
+                        AND LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
             searchTerm = searchTerm.Replace("_", @"\_");
@@ -258,6 +269,26 @@ namespace XSharpPowerTools
             }
             Connection.Close();
             return results;
+        }
+
+        public async Task<bool> FileContainsUsingAsync(string file, string usingToInsert) 
+        {
+            if (string.IsNullOrWhiteSpace(file) || string.IsNullOrWhiteSpace(usingToInsert))
+                return false;
+
+            await Connection.OpenAsync();
+            var command = Connection.CreateCommand();
+            command.CommandText =
+                @"
+                    SELECT Usings
+					FROM Files
+					WHERE TRIM(FileName) = $fileName
+                ";
+            command.Parameters.AddWithValue("$fileName", file.Trim().ToLower());
+
+            var result = await command.ExecuteScalarAsync() as string;
+            var usings = result.Split(new[] { '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return usings.Contains(usingToInsert);
         }
 
         public void CloseConnection()

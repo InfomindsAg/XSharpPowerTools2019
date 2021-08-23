@@ -11,10 +11,10 @@ namespace XSharpPowerTools.Commands
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            var solution = await VS.Solution.GetCurrentSolutionAsync();
+            var solution = await VS.Solutions.GetCurrentSolutionAsync();
             if (solution != null)
             {
-                var solutionDirectory = Path.GetDirectoryName(solution.FileName);
+                var solutionDirectory = Path.GetDirectoryName(solution.FullPath);
                 var window = new CodeBrowserWindow(solutionDirectory);
                 await CommandBase.ShowBaseWindowAsync(window);
             }

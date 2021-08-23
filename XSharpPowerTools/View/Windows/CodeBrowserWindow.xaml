@@ -13,7 +13,8 @@
     WindowStyle="None"
     ResizeMode="NoResize"
     Loaded="Window_Loaded"
-    MouseDown="Window_MouseDown">
+    MouseDown="Window_MouseDown"
+    PreviewKeyDown="Window_PreviewKeyDown">
 
     <local:BaseWindow.Resources>
         <ResourceDictionary Source="../VsThemeDictionary.xaml"/>
@@ -65,10 +66,13 @@
                         </Style>
                     </RowDefinition.Style>
                 </RowDefinition>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="515"/>
+                <ColumnDefinition Width="490"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="20"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition Width="5"/>
@@ -88,7 +92,6 @@
                 Margin="0,5,0,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                PreviewKeyDown="SearchTextBox_PreviewKeyDown"
                 TextChanged="SearchTextBox_TextChanged"
                 TabIndex="0"/>
             <Button
@@ -104,6 +107,21 @@
                 VerticalAlignment="Center"
                 Style="{StaticResource GenericButton}"
                 TabIndex="1"/>
+            <Button
+                x:Name="ResultsViewButton"
+                Grid.Row="1"
+                Grid.Column="5"
+                Height="20"
+                Width="20"
+                IsTabStop="False"
+                Click="ResultsViewButton_Click"
+                VerticalAlignment="Center"
+                TabIndex="2"
+                FontWeight="ExtraBold"
+                Style="{StaticResource GenericButton}"
+                ToolTip="Save results to seperate view"
+                FontFamily="Segoe MDL2 Assets"
+                Content="&#xE094;"/>
             <controls:HelpTextControl
                 x:Name="HelpControl"
                 Grid.Column="1"
@@ -115,10 +133,8 @@
                 Margin="0,0,0,0"
                 Grid.Row="3"
                 Grid.Column="1"
-                Grid.ColumnSpan="3"
+                Grid.ColumnSpan="5"
                 Width="Auto"
-                MouseDoubleClick="ResultsDataGrid_MouseDoubleClick"
-                PreviewKeyDown="ResultsDataGrid_PreviewKeyDown"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <DataGrid.Columns>
                     <DataGridTextColumn
@@ -129,6 +145,10 @@
                         Header=" Type"
                         Width="*"
                         Binding="{Binding TypeName}"/>
+                    <DataGridTextColumn
+                        Header=" Project"
+                        Width="*"
+                        Binding="{Binding Project}"/>
                     <DataGridTextColumn
                         Header=" File"
                         Width="*"

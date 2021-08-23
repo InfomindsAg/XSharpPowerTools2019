@@ -7,17 +7,23 @@ namespace XSharpPowerTools.View.Controls
     /// </summary>
     public partial class ResultsDataGrid : DataGrid
     {
+        public new IResultsDataGridParent Parent { private get; set; }
+
         public ResultsDataGrid()
         {
             InitializeComponent();
+            MouseDoubleClick += ResultsDataGrid_MouseDoubleClick;
         }
+
+        protected void ResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
+            Parent?.OnReturn(SelectedItem);
 
         public void SelectNext()
         {
-            var currentItem = SelectedItem;
+            object currentItem = SelectedItem;
             if (currentItem == null)
                 return;
-            var currentIndex = Items.IndexOf(currentItem);
+            int currentIndex = Items.IndexOf(currentItem);
             if (currentIndex >= Items.Count - 1)
                 return;
             SelectedItem = Items.GetItemAt(currentIndex + 1);
@@ -27,10 +33,10 @@ namespace XSharpPowerTools.View.Controls
 
         public void SelectPrevious()
         {
-            var currentItem = SelectedItem;
+            object currentItem = SelectedItem;
             if (currentItem == null)
                 return;
-            var currentIndex = Items.IndexOf(currentItem);
+            int currentIndex = Items.IndexOf(currentItem);
             if (currentIndex < 1)
                 return;
             SelectedItem = Items.GetItemAt(currentIndex - 1);

@@ -7,7 +7,7 @@ namespace XSharpPowerTools.Helpers
     {
         public static (string, string) EvaluateSearchTerm(string searchTerm)
         {
-            var methodName = string.Empty;
+            var memberName = string.Empty;
             var className = string.Empty;
             searchTerm = searchTerm.Trim().Replace(':', '.');
             searchTerm = searchTerm.Replace(' ', '.');
@@ -16,12 +16,12 @@ namespace XSharpPowerTools.Helpers
             var keyWords = searchTerm.Split('.');
             if (keyWords.Length > 1)
             {
-                methodName = keyWords[keyWords.Length - 1];
+                memberName = keyWords[keyWords.Length - 1];
                 className = keyWords[keyWords.Length - 2];
             }
             else if (searchTerm.StartsWith("."))
             {
-                methodName = searchTerm.Substring(searchTerm.TakeWhile(q => q == '.').Count());
+                memberName = searchTerm.Substring(searchTerm.TakeWhile(q => q == '.').Count());
             }
             else
             {
@@ -33,12 +33,12 @@ namespace XSharpPowerTools.Helpers
             else if (!string.IsNullOrWhiteSpace(className))
                 className = "%" + className + "%";
 
-            if (methodName.Contains('"'))
-                methodName = methodName.Replace("\"", "");
-            else if (!string.IsNullOrWhiteSpace(methodName))
-                methodName = "%" + methodName + "%";
+            if (memberName.Contains('"'))
+                memberName = memberName.Replace("\"", "");
+            else if (!string.IsNullOrWhiteSpace(memberName))
+                memberName = "%" + memberName + "%";
 
-            return (className, methodName);
+            return (className, memberName);
         }
     }
 }

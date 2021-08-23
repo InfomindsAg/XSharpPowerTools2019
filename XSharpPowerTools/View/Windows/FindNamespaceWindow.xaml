@@ -13,7 +13,8 @@
     WindowStyle="None"
     ResizeMode="NoResize"
     Loaded="Window_Loaded"
-    MouseDown="Window_MouseDown">
+    MouseDown="Window_MouseDown"
+    PreviewKeyDown="Window_PreviewKeyDown">
 
     <local:BaseWindow.Resources>
         <ResourceDictionary Source="../VsThemeDictionary.xaml"/>
@@ -84,15 +85,12 @@
                 Margin="0,5,0,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                PreviewKeyDown="SearchTextBox_PreviewKeyDown"
                 TextChanged="SearchTextBox_TextChanged"/>
             <controls:ResultsDataGrid
                 x:Name="ResultsDataGrid"
                 Margin="0,0,0,0"
                 Grid.Row="2"
-                Grid.Column="1"
-                MouseDoubleClick="ResultsDataGrid_MouseDoubleClick"
-                PreviewKeyDown="ResultsDataGrid_PreviewKeyDown">
+                Grid.Column="1">
                 <DataGrid.Columns>
                     <DataGridTextColumn 
                         Header=" Class"

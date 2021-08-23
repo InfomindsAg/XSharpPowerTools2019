@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Windows;
+using File = System.IO.File;
 
 namespace XSharpPowerTools.Commands
 {
@@ -12,11 +13,11 @@ namespace XSharpPowerTools.Commands
         {
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
 
-            var solution = await VS.Solution.GetCurrentSolutionAsync();
+            var solution = await VS.Solutions.GetCurrentSolutionAsync();
             if (solution != null)
             {
-                var solutionDirectory = Path.GetDirectoryName(solution.FileName);
-                var dbFile = solutionDirectory + @"\.vs\" + Path.GetFileNameWithoutExtension(solution.FileName) + @"\X#Model.xsdb";
+                var solutionDirectory = Path.GetDirectoryName(solution.FullPath);
+                var dbFile = solutionDirectory + @"\.vs\" + Path.GetFileNameWithoutExtension(solution.FullPath) + @"\X#Model.xsdb";
                 if (File.Exists(dbFile))
                 {
                     window.XSModel = new XSModel(dbFile);

@@ -1,20 +1,24 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
+﻿using Community.VisualStudio.Toolkit;
+using Microsoft.VisualStudio.PlatformUI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using XSharpPowerTools.Helpers;
+using XSharpPowerTools.View.Controls;
 
 namespace XSharpPowerTools.View.Windows
 {
     /// <summary>
     /// Interaction logic for CodeBrowserWindow.xaml
     /// </summary>
-    public partial class CodeBrowserWindow : BaseWindow
+    public partial class CodeBrowserWindow : BaseWindow, IResultsDataGridParent
     {
         private readonly string SolutionDirectory;
+        private XSModelResultType DisplayedResultType;
 
         public override string SearchTerm
         {
@@ -29,19 +33,17 @@ namespace XSharpPowerTools.View.Windows
         {
             InitializeComponent();
             SolutionDirectory = solutionDirectory;
+            ResultsDataGrid.Parent = this;
 
             SearchTextBox.WhenTextChanged
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .Subscribe(x => OnTextChanged());
         }
 
-        private void SetTableColumns(XSModelResultType resultType)
-        {
-            if (resultType == XSModelResultType.Member)
-                ResultsDataGrid.Columns.First().Visibility = Visibility.Visible;
-            else
-                ResultsDataGrid.Columns.First().Visibility = Visibility.Collapsed;
-        }
+        private void SetTableColumns(XSModelResultType resultType) =>
+            ResultsDataGrid.Columns.First().Visibility = resultType == XSModelResultType.Member
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
         protected async Task SearchAsync(string searchTerm)
         {
@@ -59,13 +61,10 @@ namespace XSharpPowerTools.View.Windows
                 return;
             }
 
-            results = resultType == XSModelResultType.Type
-                ? results.OrderBy(q => q.TypeName.Length).ThenBy(q => q.TypeName).ToList()
-                : results.OrderBy(q => q.MemberName.Length).ThenBy(q => q.MemberName).ThenBy(q => q.TypeName.Length).ThenBy(q => q.TypeName).ToList();
-
             ResultsDataGrid.ItemsSource = results;
             ResultsDataGrid.SelectedItem = results.FirstOrDefault();
             SetTableColumns(resultType);
+            DisplayedResultType = resultType;
 
             AllowReturn = true;
 
@@ -77,13 +76,21 @@ namespace XSharpPowerTools.View.Windows
             if (item == null)
                 return;
 
+            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+
             await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
             Close();
+
+            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
         }
 
-        private void SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (AllowReturn && e.Key == Key.Return)
+            if (AllowReturn && e.Key == Key.Return && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                SaveResultsToToolWindow();
+            }
+            else if (AllowReturn && e.Key == Key.Return)
             {
                 _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
                 {
@@ -120,27 +127,6 @@ namespace XSharpPowerTools.View.Windows
             { }
         }
 
-        private void ResultsDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var item = ResultsDataGrid.SelectedItem as XSModelResultItem;
-            _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-            {
-                await OpenItemAsync(item);
-            });
-        }
-
-        private void ResultsDataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (AllowReturn && e.Key == Key.Return)
-            {
-                var item = ResultsDataGrid.SelectedItem as XSModelResultItem;
-                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-                {
-                    await OpenItemAsync(item);
-                });
-            }
-        }
-
         private void HelpButton_Click(object sender, RoutedEventArgs e) =>
             HelpControl.Visibility = HelpControl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
 
@@ -163,5 +149,39 @@ namespace XSharpPowerTools.View.Windows
 
         private void SearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) => 
             AllowReturn = false;
+
+        public void OnReturn(object selectedItem) 
+        {
+            if (AllowReturn)
+            {
+                var item = selectedItem as XSModelResultItem;
+                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
+                {
+                    await OpenItemAsync(item);
+                });
+            }
+        }
+
+        private void ResultsViewButton_Click(object sender, RoutedEventArgs e) =>
+            SaveResultsToToolWindow();
+
+        private void SaveResultsToToolWindow() =>
+            _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
+            {
+                if (ResultsDataGrid.Items.Count < 1)
+                    return;
+
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+
+                if (ResultsDataGrid.SelectedItem != null)
+                    await OpenItemAsync(ResultsDataGrid.SelectedItem as XSModelResultItem);
+                else
+                    Close();
+
+                var toolWindowPane = await CodeBrowserResultsToolWindow.ShowAsync();
+                (toolWindowPane.Content as ToolWindowControl).UpdateToolWindowContents(DisplayedResultType, ResultsDataGrid.ItemsSource as List<XSModelResultItem>);
+
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            });
     }
 }
