@@ -8,7 +8,7 @@
     xmlns:local="clr-namespace:XSharpPowerTools.View.Windows"
     xmlns:controls="clr-namespace:XSharpPowerTools.View.Controls"
     mc:Ignorable="d"
-    Title="X# Code Browser" 
+    Title="X# Find Namespace" 
     SizeToContent="WidthAndHeight"
     WindowStyle="None"
     ResizeMode="NoResize"
