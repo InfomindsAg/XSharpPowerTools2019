@@ -1,21 +1,41 @@
-# Introduction 
-Visual Studio Extension with the goal of improving workflow when working with X# in Visual Studio 2019
-Provides two main features:
-1. X# Code Browser (Ctrl + 1, Ctrl + 2):
-	Search for and navigate to the implementation of Classes, Methods or Functions/Procedures with the various filter options
-2. X# Find Namespace (Ctrl + 2, Ctrl + 2):
-	Find the containing Namespace of a type and insert the necessary using into the current document
+# X# PowerTools
 
-# Getting Started
-To install the Extension make sure to close all instances of Visual Studio and then run PowerToys.vsix
+---------------------------------------
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+A set of tools for [X#](https://www.xsharp.eu) developers
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## Features
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+- Code Browser
+- Find and insert Namespaces
+
+There are no default shortcuts assigned, but you can easily assign shortcuts  yourself by following this [tutorial](https://docs.microsoft.com/en-us/visualstudio/ide/identifying-and-customizing-keyboard-shortcuts-in-visual-studio?view=vs-2019)
+
+### Code Browser
+
+The Code Browser allows to easily navigate within a solution containing X#-projects.
+
+![Font Options](Images/CodeBrowser.PNG)
+
+It offers various options to filter the search results:
+
+- example		- searches for classes with names similar to 'example'
+- ex1.ex2		- searches for members similar to 'ex2' within classes similar to 'ex1' ('.' equal to ':')
+- .example	    - searches for members 'example' within all classes
+- ..example	    - searches for members 'example' within current document
+- "example"     - matches whole word only
+- ex*Model      - * is a placeholder for multiple characters
+- p example     - searches for procedures/functions similar to 'example'
+- d example     - searches for defines similar to 'example'
+
+By pressing Return or double-clicking the implementation of the selected element will be opened in the editor.
+
+By pressing Ctrl + Return or clicking the top-right button the found results are exported into a dockable Visual Studio Toolwindow where results are grouped by the containing project.
+
+![Font Options](Images/CodeBrowserToolWindow.PNG)
+
+### Find and insert Namespaces
+
+Find and insert Namespaces makes it easy to find the containing Namespace of a type and insert the corresponding using at top of the current document if necessary.
+
+![Font Options](Images/FindNameSpace.PNG)

@@ -282,7 +282,7 @@ namespace XSharpPowerTools
                 @"
                     SELECT Usings
 					FROM Files
-					WHERE TRIM(FileName) = $fileName
+					WHERE TRIM(LOWER(FileName)) = $fileName
                 ";
             command.Parameters.AddWithValue("$fileName", file.Trim().ToLower());
 
