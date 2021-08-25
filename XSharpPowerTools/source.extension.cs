@@ -12,7 +12,7 @@ namespace XSharpPowerTools
         public const string Description = @"A set of tools for XSharp Developers";
         public const string Language = "en-US";
         public const string Version = "1.0";
-        public const string Author = "acs.it";
+        public const string Author = "Infominds Ag";
         public const string Tags = "";
     }
 }

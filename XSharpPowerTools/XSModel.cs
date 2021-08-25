@@ -22,10 +22,28 @@ namespace XSharpPowerTools
         public string MemberName { get; set; }
         public string ContainingFile { get; set; }
         public string Project { get; set; }
+        public string SourceCode { get; set; }
         public int Line { get; set; }
+        public int Kind { get; set; }
 
         public string RelativePath =>
             string.IsNullOrWhiteSpace(SolutionDirectory) || !ContainingFile.StartsWith(SolutionDirectory) ? ContainingFile : ContainingFile.Substring(SolutionDirectory.Length + 1);
+
+        public string KindName => Kind switch
+        {
+            1 => "Class",
+            5 => "Method",
+            6 => "Access",
+            7 => "Assign",
+            8 => "Property",
+            9 => "Function",
+            10 => "Procedure",
+            11 => "Variable",
+            16 => "Interface",
+            18 => "Enum",
+            23 => "Define",
+            _ => string.Empty
+        };
     }
 
     public class NamespaceResultItem
@@ -53,7 +71,7 @@ namespace XSharpPowerTools
             {
                 command.CommandText =
                 @"
-                    SELECT Name, FileName, StartLine, TypeName, ProjectFileName
+                    SELECT Name, FileName, StartLine, TypeName, ProjectFileName, Kind, Sourcecode
                     FROM ProjectMembers 
                     WHERE";
 
@@ -85,6 +103,8 @@ namespace XSharpPowerTools
                             Line = reader.GetInt32(2),
                             TypeName = reader.GetString(3),
                             Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
+                            Kind = reader.GetInt32(5),
+                            SourceCode = reader.GetString(6),
                             ResultType = XSModelResultType.Member,
                             SolutionDirectory = solutionDirectory
                         };
@@ -108,7 +128,7 @@ namespace XSharpPowerTools
 
                 command.CommandText =
                     @"
-                        SELECT Name, FileName, StartLine, TypeName, ProjectFileName
+                        SELECT Name, FileName, StartLine, TypeName, ProjectFileName, Kind, Sourcecode
                         FROM ProjectMembers
                         WHERE IdType IN (SELECT Id
                 				         FROM ProjectTypes
@@ -138,6 +158,8 @@ namespace XSharpPowerTools
                             Line = reader.GetInt32(2),
                             TypeName = reader.GetString(3),
                             Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
+                            Kind = reader.GetInt32(5),
+                            SourceCode = reader.GetString(6),
                             ResultType = XSModelResultType.Member,
                             SolutionDirectory = solutionDirectory
                         };
@@ -156,10 +178,9 @@ namespace XSharpPowerTools
 
                     command.CommandText =
                     @"
-                        SELECT Name, FileName, StartLine, ProjectFileName
+                        SELECT Name, FileName, StartLine, ProjectFileName, Kind, Sourcecode
                         FROM ProjectTypes 
-                        WHERE Kind = 1
-                        AND LOWER(Sourcecode) LIKE '%class%'
+                        WHERE ((Kind = 1 AND LOWER(Sourcecode) LIKE '%class%') OR Kind = 16 OR Kind = 18)
                         AND LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
                         ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
@@ -180,6 +201,8 @@ namespace XSharpPowerTools
                                 ContainingFile = reader.GetString(1),
                                 Line = reader.GetInt32(2),
                                 Project = Path.GetFileNameWithoutExtension(reader.GetString(3)),
+                                Kind = reader.GetInt32(4),
+                                SourceCode = reader.GetString(5),
                                 ResultType = XSModelResultType.Type,
                                 SolutionDirectory = solutionDirectory
                             };
@@ -196,7 +219,7 @@ namespace XSharpPowerTools
 
                     command.CommandText =
                     @"
-                        SELECT Name, FileName, StartLine, TypeName, ProjectFileName
+                        SELECT Name, FileName, StartLine, TypeName, ProjectFileName, Kind, Sourcecode
                         FROM ProjectMembers 
                         WHERE (Kind = 5 OR Kind = 6 OR Kind = 7 OR Kind = 8)
                         AND LOWER(TRIM(Name)) LIKE $memberName ESCAPE '\'
@@ -224,6 +247,8 @@ namespace XSharpPowerTools
                                 Line = reader.GetInt32(2),
                                 TypeName = reader.GetString(3),
                                 Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
+                                Kind = reader.GetInt32(5),
+                                SourceCode = reader.GetString(6),
                                 ResultType = XSModelResultType.Member,
                                 SolutionDirectory = solutionDirectory
                             };

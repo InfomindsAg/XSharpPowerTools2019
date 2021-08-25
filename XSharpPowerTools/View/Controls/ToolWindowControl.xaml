@@ -22,15 +22,19 @@
             <DataGrid.Columns>
                 <DataGridTextColumn
                         Header=" Member"
-                        Width="*"
+                        Width="3*"
                         Binding="{Binding MemberName}"/>
                 <DataGridTextColumn
                         Header=" Type"
-                        Width="*"
+                        Width="3*"
                         Binding="{Binding TypeName}"/>
                 <DataGridTextColumn
+                        Header=" Kind"
+                        Width="2*"
+                        Binding="{Binding KindName}"/>
+                <DataGridTextColumn
                         Header=" File"
-                        Width="*"
+                        Width="3*"
                         Binding="{Binding RelativePath}"/>
             </DataGrid.Columns>
         </local:ResultsDataGrid>

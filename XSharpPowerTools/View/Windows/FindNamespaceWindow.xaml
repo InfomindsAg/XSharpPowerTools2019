@@ -30,6 +30,7 @@
             <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:EnvironmentColors.ToolWindowBackgroundBrushKey}}"/>
         </Style>
     </local:BaseWindow.Style>
+    
     <Border Style="{StaticResource ResourceKey=WindowBorder}">
         <Grid 
             x:Name="ContainingGrid"

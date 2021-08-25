@@ -171,30 +171,22 @@
                 </Style>
             </Setter.Value>
         </Setter>
+        <Setter Property="RowStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},Path=Item.SourceCode}"/>
+                    <Setter Property="ToolTipService.ShowDuration" Value="5000"/>
+                    <Setter Property="ToolTipService.BetweenShowDelay" Value="1500"/>
+                    <Setter Property="ToolTipService.InitialShowDelay" Value="1500"/>
+                </Style>
+            </Setter.Value>
+        </Setter>
         <Setter Property="CellStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type DataGridCell}">
                     <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:EnvironmentColors.ComboBoxTextBrushKey}}"/>
                     <Setter Property="Background" Value="{DynamicResource {x:Static vsshell:EnvironmentColors.ComboBoxBackgroundBrushKey}}"/>
                     <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},Path=Content.Text}"/>
-                    <!--<Setter Property="ToolTip.Style">
-                        <Setter.Value>
-                            <Style TargetType="{x:Type ToolTip}">
-                                <Style.Triggers>
-                                    <Trigger Property="Content" Value="{x:Static sys:String.Empty}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Trigger>
-                                    <Trigger Property="Content"  Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Setter.Value>
-                    </Setter>-->
-                    <Setter Property="ToolTipService.ShowDuration" Value="5000"/>
-                    <Setter Property="ToolTipService.BetweenShowDelay" Value="1500"/>
-                    <Setter Property="ToolTipService.InitialShowDelay" Value="1500"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:EnvironmentColors.TitleBarActiveTextBrushKey}}"/>
@@ -427,7 +419,6 @@
                                 <ColumnDefinition Width="15"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <!--<Ellipse x:Name="circle" Fill="{DynamicResource {x:Static vsshell:EnvironmentColors.PageSideBarExpanderHeaderBrushKey}}" HorizontalAlignment="Center" Height="19" Stroke="{DynamicResource {x:Static vsshell:EnvironmentColors.PageSideBarExpanderChevronBrushKey}}" VerticalAlignment="Center" Width="19"/>-->
                             <Path x:Name="arrow" Data="M 1,1.5 L 4.5,5 L 8,1.5" HorizontalAlignment="Center" SnapsToDevicePixels="false" Stroke="{DynamicResource {x:Static vsshell:EnvironmentColors.PageSideBarExpanderChevronBrushKey}}" StrokeThickness="2" VerticalAlignment="Center"/>
                             <ContentPresenter Grid.Column="1" HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                         </Grid>

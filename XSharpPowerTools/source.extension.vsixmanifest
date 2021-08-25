@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="XSharpPowerTools.821a9ef3-feda-412d-b004-767f380c7336" Version="1.0" Language="en-US" Publisher="acs.it" />
+        <Identity Id="XSharpPowerTools.821a9ef3-feda-412d-b004-767f380c7336" Version="1.0" Language="en-US" Publisher="Infominds Ag" />
         <DisplayName>XSharpPowerTools</DisplayName>
         <Description xml:space="preserve">A set of tools for XSharp Developers</Description>
         <MoreInfo>https://github.com/InfomindsAg/XSharpPowerTools</MoreInfo>
-        <License>..\LICENSE</License>
+        <License>Resources\LICENSE</License>
         <ReleaseNotes>https://github.com/InfomindsAg/XSharpPowerTools/CHANGELOG.md</ReleaseNotes>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>

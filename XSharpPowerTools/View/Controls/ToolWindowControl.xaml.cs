@@ -31,7 +31,7 @@ namespace XSharpPowerTools.View.Controls
             ResultsDataGrid.Parent = this;
         }
 
-        public void OnReturn(object selectedItem) 
+        public void OnReturn(object selectedItem)
         {
             if (selectedItem == null)
                 return;
@@ -58,12 +58,12 @@ namespace XSharpPowerTools.View.Controls
             }
         }
 
-        private void SetTableColumns(XSModelResultType resultType) => 
+        private void SetTableColumns(XSModelResultType resultType) =>
             ResultsDataGrid.Columns.First().Visibility = resultType == XSModelResultType.Member
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-        public void SolutionEvents_OnBeforeCloseSolution() => 
+        public void SolutionEvents_OnBeforeCloseSolution() =>
             UpdateToolWindowContents(XSModelResultType.Member, new List<XSModelResultItem>());
     }
 }
