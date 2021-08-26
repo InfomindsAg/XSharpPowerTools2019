@@ -119,7 +119,7 @@
                 TabIndex="2"
                 FontWeight="ExtraBold"
                 Style="{StaticResource GenericButton}"
-                ToolTip="Save results to seperate view"
+                ToolTip="Save results to seperate view (Ctrl + Return)"
                 FontFamily="Segoe MDL2 Assets"
                 Content="&#xE094;"/>
             <controls:HelpTextControl
@@ -139,24 +139,31 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn
                         Header=" Member"
-                        Width="3*"
+                        Width="2*"
                         Binding="{Binding MemberName}"/>
                     <DataGridTextColumn
                         Header=" Type"
-                        Width="3*"
+                        Width="2*"
                         Binding="{Binding TypeName}"/>
                     <DataGridTextColumn
                         Header=" Kind"
-                        Width="2*"
-                        Binding="{Binding KindName}"/>
-                    <DataGridTextColumn
-                        Header=" Project"
-                        Width="2*"
-                        Binding="{Binding Project}"/>
+                        Width="SizeToCells"
+                        Binding="{Binding KindName}"
+                        ElementStyle="{StaticResource ResourceKey=ColumnElementStyle}"
+                        CanUserResize="False"/>
                     <DataGridTextColumn
                         Header=" File"
                         Width="3*"
-                        Binding="{Binding RelativePath}"/>
+                        Binding="{Binding RelativePath}">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource ResourceKey=GenericDataGridCell}">
+                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},Path=Content.Text}"/>
+                                <Setter Property="ToolTipService.ShowDuration" Value="5000"/>
+                                <Setter Property="ToolTipService.BetweenShowDelay" Value="1500"/>
+                                <Setter Property="ToolTipService.InitialShowDelay" Value="1500"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </controls:ResultsDataGrid>
         </Grid>

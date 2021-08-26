@@ -19,23 +19,37 @@
             CanUserSortColumns="True"
             MaxHeight="Infinity"
             ItemsSource="{Binding Source={StaticResource CvsResults}}">
+            <DataGrid.Resources>
+                <ResourceDictionary Source="../VsThemeDictionary.xaml"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn
                         Header=" Member"
-                        Width="3*"
+                        Width="2*"
                         Binding="{Binding MemberName}"/>
                 <DataGridTextColumn
                         Header=" Type"
-                        Width="3*"
+                        Width="2*"
                         Binding="{Binding TypeName}"/>
                 <DataGridTextColumn
                         Header=" Kind"
-                        Width="2*"
-                        Binding="{Binding KindName}"/>
+                        Width="SizeToCells"
+                        Binding="{Binding KindName}"
+                        ElementStyle="{StaticResource ResourceKey=ColumnElementStyle}"
+                        CanUserResize="False"/>
                 <DataGridTextColumn
                         Header=" File"
                         Width="3*"
-                        Binding="{Binding RelativePath}"/>
+                        Binding="{Binding RelativePath}">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource ResourceKey=GenericDataGridCell}">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},Path=Content.Text}"/>
+                            <Setter Property="ToolTipService.ShowDuration" Value="5000"/>
+                            <Setter Property="ToolTipService.BetweenShowDelay" Value="1500"/>
+                            <Setter Property="ToolTipService.InitialShowDelay" Value="1500"/>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </local:ResultsDataGrid>
     </Grid>
