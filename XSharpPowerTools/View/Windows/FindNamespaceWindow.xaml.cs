@@ -40,7 +40,6 @@ namespace XSharpPowerTools.View.Windows
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
 
-
             var results = await XSModel.GetContainingNamespaceAsync(searchTerm.Trim());
             ResultsDataGrid.ItemsSource = results;
             ResultsDataGrid.SelectedItem = results.FirstOrDefault();

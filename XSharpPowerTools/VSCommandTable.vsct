@@ -23,7 +23,7 @@
       <Menu guid="XSharpPowerTools" id="MySubMenu" type="Menu" priority="0x0600">
         <Parent guid="XSharpPowerTools" id="MyMenuGroup"/>
         <Strings>
-          <ButtonText>X# Power Toys</ButtonText>
+          <ButtonText>X# Power Tools</ButtonText>
         </Strings>
       </Menu>
     </Menus>

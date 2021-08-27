@@ -9,14 +9,11 @@ namespace XSharpPowerTools.View.Controls
     {
         public new IResultsDataGridParent Parent { private get; set; }
 
-        public ResultsDataGrid()
-        {
+        public ResultsDataGrid() =>
             InitializeComponent();
-            MouseDoubleClick += ResultsDataGrid_MouseDoubleClick;
-        }
 
         protected void ResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
-            Parent?.OnReturn(SelectedItem);
+            Parent?.OnReturn((sender as DataGridRow).Item);
 
         public void SelectNext()
         {
