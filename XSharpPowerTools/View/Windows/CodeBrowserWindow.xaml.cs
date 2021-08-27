@@ -52,14 +52,10 @@ namespace XSharpPowerTools.View.Windows
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
 
-            var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::") ? await DocumentHelper.GetCurrentFileAsync() : null;
+            var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::") 
+                ? await DocumentHelper.GetCurrentFileAsync() 
+                : null;
             var (results, resultType) = await XSModel.GetSearchTermMatchesAsync(searchTerm, SolutionDirectory, currentFile);
-
-            if (results == null || results.Count < 1)
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-                return;
-            }
 
             ResultsDataGrid.ItemsSource = results;
             ResultsDataGrid.SelectedItem = results.FirstOrDefault();

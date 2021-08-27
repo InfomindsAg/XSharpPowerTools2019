@@ -68,7 +68,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="490"/>
+                <ColumnDefinition Width="540"/>
                 <ColumnDefinition Width="5" />
             </Grid.ColumnDefinitions>
             <Label
