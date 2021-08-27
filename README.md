@@ -4,10 +4,20 @@
 
 A set of tools for [X#](https://www.xsharp.eu) developers
 
+## Getting started
+
+Get the extension on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=InfomindsAG.XSharpPowerTools).
+Installation requires a minimum Visual Studio Version of 16.10.4 and a minimum X# Version of 2.7.
+
 ## Features
 
 - Code Browser
 - Find and insert Namespaces
+
+The tools can be found under **Tools>X# Power Tools** or in the editors context menu.
+
+![Font Options](Images/ToolsMenu.PNG)
+![Font Options](Images/ContextMenu.PNG)
 
 There are no default shortcuts assigned, but you can easily assign shortcuts  yourself by following this [tutorial](https://docs.microsoft.com/en-us/visualstudio/ide/identifying-and-customizing-keyboard-shortcuts-in-visual-studio?view=vs-2019)
 
