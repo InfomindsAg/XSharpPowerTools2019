@@ -15,6 +15,22 @@ namespace XSharpPowerTools.View.Controls
     {
         private readonly VisualBrush PlaceholderBrush;
 
+        public new string Text
+        {
+            get => base.Text;
+            set
+            {
+                if (value == null)
+                {
+                    base.Text = null;
+                    return;
+                }
+
+                var lines = value.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                base.Text = lines.FirstOrDefault();
+            }
+        }
+
         public SearchTextBox()
         {
             InitializeComponent();
