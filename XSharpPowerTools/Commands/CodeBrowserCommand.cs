@@ -9,6 +9,12 @@ namespace XSharpPowerTools.Commands
     [Command(PackageIds.CodeBrowserCommand)]
     internal sealed class CodeBrowserCommand : BaseCommand<CodeBrowserCommand>
     {
+        protected override async Task InitializeCompletedAsync()
+        {
+            await base.InitializeCompletedAsync();
+            Command.BeforeQueryStatus += CommandBase.BeforeQueryStatus;
+        }
+
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             var solution = await VS.Solutions.GetCurrentSolutionAsync();

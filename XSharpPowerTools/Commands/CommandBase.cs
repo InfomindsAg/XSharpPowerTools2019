@@ -1,9 +1,16 @@
 ﻿using Community.VisualStudio.Toolkit;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Windows;
 using File = System.IO.File;
+using Task = System.Threading.Tasks.Task;
 
 namespace XSharpPowerTools.Commands
 {
@@ -44,6 +51,36 @@ namespace XSharpPowerTools.Commands
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                 await VS.MessageBox.ShowWarningAsync("X# Code Browser", "X# Code Browser is only available an opened solution.");
             }
+        }
+
+        public static void BeforeQueryStatus(object sender, EventArgs e)
+        {
+            if (sender is OleMenuCommand menuCommand)
+            {
+                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
+                {
+                    menuCommand.Enabled = await ActiveSolutionContainsXsProjectAsync();
+                });
+            }
+        }
+
+        public static async Task<bool> ActiveSolutionContainsXsProjectAsync()
+        {
+            var solution = await VS.Solutions.GetCurrentSolutionAsync();
+            var guidDictionary = new Dictionary<string, int>();
+            if (solution != null)
+            {
+                return await solution.Children.AnyAsync(async q =>
+                {
+                    if (q.Type == SolutionItemType.Project)
+                    {
+                        var project = q as Project;
+                        return await project.IsKindAsync(XSharpPowerToolsPackage.XSharpProjectTypeGuid);
+                    }
+                    return false;
+                });
+            }
+            return false;
         }
     }
 }
