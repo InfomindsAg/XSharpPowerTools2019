@@ -16,8 +16,8 @@ Installation requires a minimum Visual Studio Version of 16.10.4 and a minimum X
 
 The tools can be found under **Tools>X# Power Tools** or in the editors context menu.
 
-![Font Options](Images/ToolsMenu.PNG)
-![Font Options](Images/ContextMenu.PNG)
+![X# Power Tools Commands](Images/ToolsMenu.PNG)
+![X# Power Tools Commands](Images/ContextMenu.PNG)
 
 There are no default shortcuts assigned, but you can easily assign shortcuts  yourself by following this [tutorial](https://docs.microsoft.com/en-us/visualstudio/ide/identifying-and-customizing-keyboard-shortcuts-in-visual-studio?view=vs-2019)
 
@@ -25,7 +25,7 @@ There are no default shortcuts assigned, but you can easily assign shortcuts  yo
 
 The Code Browser allows to easily navigate within a solution containing X#-projects.
 
-![Font Options](Images/CodeBrowser.PNG)
+![X# Code Browser](Images/CodeBrowser.PNG)
 
 It offers various options to filter the search results:
 
@@ -42,10 +42,10 @@ By pressing Return or double-clicking the implementation of the selected element
 
 By pressing Ctrl + Return or clicking the top-right button the found results are exported into a dockable Visual Studio Toolwindow where results are grouped by the containing project.
 
-![Font Options](Images/CodeBrowserToolWindow.PNG)
+![X# Code Browser ToolWindow](Images/CodeBrowserToolWindow.PNG)
 
 ### Find and insert Namespaces
 
 Find and insert Namespaces makes it easy to find the containing Namespace of a type and insert the corresponding using at top of the current document if necessary.
 
-![Font Options](Images/FindNameSpace.PNG)
+![X# Find Namespace](Images/FindNameSpace.PNG)

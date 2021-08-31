@@ -96,6 +96,7 @@ namespace XSharpPowerTools.View.Windows
                 {
                     await SearchAsync(SearchTextBox.Text);
                 });
+                SearchTextBox.CaretIndex = int.MaxValue;
             }
             try
             {

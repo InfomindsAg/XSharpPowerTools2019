@@ -11,7 +11,8 @@ namespace XSharpPowerTools
     public enum XSModelResultType
     {
         Type,
-        Member
+        Member,
+        Procedure
     }
 
     public class XSModelResultItem
@@ -105,14 +106,14 @@ namespace XSharpPowerTools
                             Project = Path.GetFileNameWithoutExtension(reader.GetString(4)),
                             Kind = reader.GetInt32(5),
                             SourceCode = reader.GetString(6),
-                            ResultType = XSModelResultType.Member,
+                            ResultType = XSModelResultType.Procedure,
                             SolutionDirectory = solutionDirectory
                         };
                         results.Add(resultItem);
                     }
                 }
                 Connection.Close();
-                return (results, XSModelResultType.Member);
+                return (results, XSModelResultType.Procedure);
 
             }
             else if (!string.IsNullOrWhiteSpace(currentFile) && (searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")))

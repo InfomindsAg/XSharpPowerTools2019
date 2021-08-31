@@ -19,6 +19,8 @@ namespace XSharpPowerTools
     [ProvideToolWindow(typeof(CodeBrowserResultsToolWindow.Pane), Style = VsDockStyle.Linked, Window = WindowGuids.ErrorList)]
     public sealed class XSharpPowerToolsPackage : ToolkitPackage
     {
+        public const string XSharpProjectTypeGuid = "{aa6c8d78-22ff-423a-9c7c-5f2393824e04}";
+
         public static XSharpPowerToolsPackage Instance { get; private set; }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Controls;
@@ -40,10 +41,26 @@ namespace XSharpPowerTools.View.Windows
                 .Subscribe(x => OnTextChanged());
         }
 
-        private void SetTableColumns(XSModelResultType resultType) =>
-            ResultsDataGrid.Columns.First().Visibility = resultType == XSModelResultType.Member
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+        private void SetTableColumns(XSModelResultType resultType)
+        {
+            ResultsDataGrid.Columns[0].Visibility = resultType == XSModelResultType.Type
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+            ResultsDataGrid.Columns[1].Visibility = resultType == XSModelResultType.Procedure
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+            ResultsDataGrid.Columns[0].Width = 0;
+            ResultsDataGrid.Columns[1].Width = 0;
+            ResultsDataGrid.Columns[2].Width = 0;
+            ResultsDataGrid.Columns[3].Width = 0;
+            ResultsDataGrid.UpdateLayout();
+            ResultsDataGrid.Columns[0].Width = new DataGridLength(3, DataGridLengthUnitType.Star);
+            ResultsDataGrid.Columns[1].Width = new DataGridLength(4, DataGridLengthUnitType.Star);
+            ResultsDataGrid.Columns[2].Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
+            ResultsDataGrid.Columns[3].Width = new DataGridLength(9, DataGridLengthUnitType.Star);
+        }
 
         protected async Task SearchAsync(string searchTerm)
         {
@@ -73,11 +90,15 @@ namespace XSharpPowerTools.View.Windows
                 return;
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-
-            await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
-            Close();
-
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            try 
+            {
+                await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
+                Close();
+            }
+            finally 
+            {
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            }
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -114,6 +135,7 @@ namespace XSharpPowerTools.View.Windows
                 {
                     await SearchAsync(SearchTextBox.Text);
                 });
+                SearchTextBox.CaretIndex = int.MaxValue;
             }
             try
             {

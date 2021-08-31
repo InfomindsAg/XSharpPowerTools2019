@@ -12,7 +12,7 @@ namespace XSharpPowerTools.View.Controls
         public ResultsDataGrid() =>
             InitializeComponent();
 
-        protected void ResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
+        protected void ResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) =>
             Parent?.OnReturn((sender as DataGridRow).Item);
 
         public void SelectNext()
