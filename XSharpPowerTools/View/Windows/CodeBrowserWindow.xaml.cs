@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Controls;
@@ -40,10 +41,22 @@ namespace XSharpPowerTools.View.Windows
                 .Subscribe(x => OnTextChanged());
         }
 
-        private void SetTableColumns(XSModelResultType resultType) =>
-            ResultsDataGrid.Columns.First().Visibility = resultType == XSModelResultType.Member
+        private void SetTableColumns(XSModelResultType resultType)
+        {
+            ResultsDataGrid.Columns[0].Visibility = resultType == XSModelResultType.Member
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            ResultsDataGrid.Columns[0].Width = 0;
+            ResultsDataGrid.Columns[1].Width = 0;
+            ResultsDataGrid.Columns[2].Width = 0;
+            ResultsDataGrid.Columns[3].Width = 0;
+            ResultsDataGrid.UpdateLayout();
+            ResultsDataGrid.Columns[0].Width = new DataGridLength(4, DataGridLengthUnitType.Star);
+            ResultsDataGrid.Columns[1].Width = new DataGridLength(4, DataGridLengthUnitType.Star);
+            ResultsDataGrid.Columns[2].Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
+            ResultsDataGrid.Columns[3].Width = new DataGridLength(9, DataGridLengthUnitType.Star);
+        }
 
         protected async Task SearchAsync(string searchTerm)
         {

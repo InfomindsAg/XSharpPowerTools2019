@@ -58,10 +58,22 @@ namespace XSharpPowerTools.View.Controls
             }
         }
 
-        private void SetTableColumns(XSModelResultType resultType) =>
-            ResultsDataGrid.Columns.First().Visibility = resultType == XSModelResultType.Member
+        private void SetTableColumns(XSModelResultType resultType)
+        {
+            ResultsDataGrid.Columns[0].Visibility = resultType == XSModelResultType.Member
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            ResultsDataGrid.Columns[0].Width = 0;
+            ResultsDataGrid.Columns[1].Width = 0;
+            ResultsDataGrid.Columns[2].Width = 0;
+            ResultsDataGrid.Columns[3].Width = 0;
+            ResultsDataGrid.UpdateLayout();
+            ResultsDataGrid.Columns[0].Width = new DataGridLength(4, DataGridLengthUnitType.Star);
+            ResultsDataGrid.Columns[1].Width = new DataGridLength(4, DataGridLengthUnitType.Star);
+            ResultsDataGrid.Columns[2].Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
+            ResultsDataGrid.Columns[3].Width = new DataGridLength(9, DataGridLengthUnitType.Star);
+        }
 
         public void SolutionEvents_OnBeforeCloseSolution() =>
             UpdateToolWindowContents(XSModelResultType.Member, new List<XSModelResultItem>());

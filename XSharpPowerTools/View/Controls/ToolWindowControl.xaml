@@ -25,21 +25,17 @@
             <DataGrid.Columns>
                 <DataGridTextColumn
                         Header=" Member"
-                        Width="2*"
                         Binding="{Binding MemberName}"/>
                 <DataGridTextColumn
                         Header=" Type"
-                        Width="2*"
                         Binding="{Binding TypeName}"/>
                 <DataGridTextColumn
                         Header=" Kind"
-                        Width="SizeToCells"
                         Binding="{Binding KindName}"
                         ElementStyle="{StaticResource ResourceKey=ColumnElementStyle}"
                         CanUserResize="False"/>
                 <DataGridTextColumn
                         Header=" File"
-                        Width="3*"
                         Binding="{Binding RelativePath}">
                     <DataGridTextColumn.CellStyle>
                         <Style TargetType="DataGridCell" BasedOn="{StaticResource ResourceKey=GenericDataGridCell}">
