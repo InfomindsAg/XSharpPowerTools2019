@@ -90,11 +90,15 @@ namespace XSharpPowerTools.View.Windows
                 return;
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-
-            await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
-            Close();
-
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            try 
+            {
+                await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
+                Close();
+            }
+            finally 
+            {
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            }
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
