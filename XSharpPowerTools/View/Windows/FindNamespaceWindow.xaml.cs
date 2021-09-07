@@ -44,6 +44,10 @@ namespace XSharpPowerTools.View.Windows
             ResultsDataGrid.ItemsSource = results;
             ResultsDataGrid.SelectedItem = results.FirstOrDefault();
 
+            NoResultsLabel.Visibility = results.Count < 1
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             AllowReturn = true;
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;

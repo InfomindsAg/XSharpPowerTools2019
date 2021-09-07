@@ -79,6 +79,10 @@ namespace XSharpPowerTools.View.Windows
             SetTableColumns(resultType);
             DisplayedResultType = resultType;
 
+            NoResultsLabel.Visibility = results.Count < 1
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             AllowReturn = true;
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
