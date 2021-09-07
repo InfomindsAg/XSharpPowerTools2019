@@ -94,9 +94,9 @@
                 Grid.Column="1">
                 <DataGrid.Columns>
                     <DataGridTextColumn 
-                        Header=" Class"
+                        Header=" Type"
                         Width="*"
-                        Binding="{Binding ClassName}"/>
+                        Binding="{Binding TypeName}"/>
                     <DataGridTextColumn
                         Header=" Namespace"
                         Width="*"

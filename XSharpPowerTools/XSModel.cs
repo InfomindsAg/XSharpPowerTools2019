@@ -49,8 +49,11 @@ namespace XSharpPowerTools
 
     public class NamespaceResultItem
     {
-        public string ClassName { get; set; }
+        public string TypeName { get; set; }
         public string Namespace { get; set; }
+
+        public override int GetHashCode() =>
+            TypeName.GetHashCode() + Namespace.GetHashCode();
     }
 
     public class XSModel
@@ -268,6 +271,7 @@ namespace XSharpPowerTools
                 return null;
 
             await Connection.OpenAsync();
+            searchTerm = searchTerm.Replace("_", @"\_");
             var command = Connection.CreateCommand();
             command.CommandText =
                     @"
@@ -275,12 +279,11 @@ namespace XSharpPowerTools
                         FROM AssemblyTypes 
                         WHERE Namespace IS NOT NULL
                         AND trim(Namespace) != ''
-                        AND LOWER(TRIM(Name)) LIKE $className ESCAPE '\'
+                        AND LOWER(TRIM(Name)) LIKE $typeName ESCAPE '\'
                         ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
                         LIMIT 100
                     ";
-            searchTerm = searchTerm.Replace("_", @"\_");
-            command.Parameters.AddWithValue("$className", "%" + searchTerm.Trim().ToLower() + "%");
+            command.Parameters.AddWithValue("$typeName", "%" + searchTerm.Trim().ToLower() + "%");
 
             var reader = await command.ExecuteReaderAsync();
             var results = new List<NamespaceResultItem>();
@@ -288,13 +291,39 @@ namespace XSharpPowerTools
             {
                 var result = new NamespaceResultItem
                 {
-                    ClassName = reader.GetString(0),
+                    TypeName = reader.GetString(0),
                     Namespace = reader.GetString(1)
                 };
                 results.Add(result);
             }
+
+            command = Connection.CreateCommand();
+            command.CommandText =
+                    @"
+                        SELECT DISTINCT Name, Namespace
+                        FROM ProjectTypes 
+                        WHERE Namespace IS NOT NULL
+                        AND trim(Namespace) != ''
+                        AND LOWER(TRIM(Name)) LIKE $typeName ESCAPE '\'
+                        ORDER BY LENGTH(TRIM(Name)), TRIM(Name)
+                        LIMIT 100
+                    ";
+            command.Parameters.AddWithValue("$typeName", "%" + searchTerm.Trim().ToLower() + "%");
+
+            reader = await command.ExecuteReaderAsync();
+            results = new List<NamespaceResultItem>();
+            while (await reader.ReadAsync())
+            {
+                var result = new NamespaceResultItem
+                {
+                    TypeName = reader.GetString(0),
+                    Namespace = reader.GetString(1)
+                };
+                results.Add(result);
+            }
+
             Connection.Close();
-            return results;
+            return results.Distinct().ToList();
         }
 
         public async Task<bool> FileContainsUsingAsync(string file, string usingToInsert) 

@@ -67,7 +67,6 @@ namespace XSharpPowerTools.Commands
         public static async Task<bool> ActiveSolutionContainsXsProjectAsync()
         {
             var solution = await VS.Solutions.GetCurrentSolutionAsync();
-            var guidDictionary = new Dictionary<string, int>();
             if (solution != null)
             {
                 return await solution.Children.AnyAsync(async q =>
