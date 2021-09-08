@@ -1,5 +1,11 @@
 # Change log
 
+## 1.3
+
+- Find Namespace tool searching in local sourcecode
+- User feedback when no results are found
+- Bug fixes
+
 ## 1.2
 
 - Improved Visual Studio integration
