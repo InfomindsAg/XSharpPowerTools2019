@@ -45,6 +45,18 @@
                 <RowDefinition>
                     <RowDefinition.Style>
                         <Style TargetType="{x:Type RowDefinition}">
+                            <Setter Property="Height" Value="0" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ResultsDataGrid, Path=Items.Count}" Value="0">
+                                    <Setter Property="Height" Value="Auto" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </RowDefinition.Style>
+                </RowDefinition>
+                <RowDefinition>
+                    <RowDefinition.Style>
+                        <Style TargetType="{x:Type RowDefinition}">
                             <Setter Property="Height" Value="Auto" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=ResultsDataGrid, Path=Items.Count}" Value="0">
@@ -66,7 +78,6 @@
                         </Style>
                     </RowDefinition.Style>
                 </RowDefinition>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5" />
@@ -128,10 +139,19 @@
                 Grid.ColumnSpan="5"
                 Grid.Row="2"
                 Visibility="Collapsed"/>
+            <Label
+                x:Name="NoResultsLabel"
+                Grid.Column="1"
+                Grid.ColumnSpan="5"
+                Grid.Row="3"
+                Content="No results found"
+                Visibility="Collapsed"
+                HorizontalAlignment="Center"
+                Style="{StaticResource GenericLabel}"/>
             <controls:ResultsDataGrid
                 x:Name="ResultsDataGrid"
                 Margin="0,0,0,0"
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="1"
                 Grid.ColumnSpan="5"
                 Width="Auto"

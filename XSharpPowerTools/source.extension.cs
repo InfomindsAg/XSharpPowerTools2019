@@ -11,7 +11,7 @@ namespace XSharpPowerTools
         public const string Name = "XSharpPowerTools";
         public const string Description = @"A set of tools for XSharp Developers";
         public const string Language = "en-US";
-        public const string Version = "1.2";
+        public const string Version = "1.3";
         public const string Author = "Infominds Ag";
         public const string Tags = "";
     }

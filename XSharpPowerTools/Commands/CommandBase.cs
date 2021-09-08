@@ -64,23 +64,29 @@ namespace XSharpPowerTools.Commands
             }
         }
 
-        public static async Task<bool> ActiveSolutionContainsXsProjectAsync()
+        private static async Task<bool> ActiveSolutionContainsXsProjectAsync()
         {
             var solution = await VS.Solutions.GetCurrentSolutionAsync();
-            var guidDictionary = new Dictionary<string, int>();
-            if (solution != null)
+            return solution != null && await ChildrenContainXsProjectAsync(solution.Children);
+        }
+
+        private static async Task<bool> ChildrenContainXsProjectAsync(IEnumerable<SolutionItem?> children)
+        {
+            foreach(var child in children) 
             {
-                return await solution.Children.AnyAsync(async q =>
+                if (child.Type == SolutionItemType.Project)
                 {
-                    if (q.Type == SolutionItemType.Project)
-                    {
-                        var project = q as Project;
-                        return await project.IsKindAsync(XSharpPowerToolsPackage.XSharpProjectTypeGuid);
-                    }
-                    return false;
-                });
+                    var project = child as Project;
+                    if (await project.IsKindAsync(XSharpPowerToolsPackage.XSharpProjectTypeGuid))
+                        return true;
+                }
+                else if (child.Type == SolutionItemType.SolutionFolder || child.Type == SolutionItemType.PhysicalFolder)
+                {
+                    if (await ChildrenContainXsProjectAsync(child.Children))
+                        return true;
+                }
             }
             return false;
-        }
+        } 
     }
 }
