@@ -311,7 +311,6 @@ namespace XSharpPowerTools
             command.Parameters.AddWithValue("$typeName", "%" + searchTerm.Trim().ToLower() + "%");
 
             reader = await command.ExecuteReaderAsync();
-            results = new List<NamespaceResultItem>();
             while (await reader.ReadAsync())
             {
                 var result = new NamespaceResultItem
