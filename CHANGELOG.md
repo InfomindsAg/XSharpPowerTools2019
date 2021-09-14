@@ -1,5 +1,9 @@
 # Change log
 
+## 1.4
+
+- Find Namespace tool bug fix
+
 ## 1.3
 
 - Find Namespace tool searching in local sourcecode
