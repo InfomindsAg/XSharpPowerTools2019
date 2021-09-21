@@ -66,7 +66,7 @@ namespace XSharpPowerTools
         public async Task<(List<XSModelResultItem>, XSModelResultType)> GetSearchTermMatchesAsync(string searchTerm, string solutionDirectory, string currentFile = null)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
-                return (null, 0);
+                return (new(), 0);
 
             await Connection.OpenAsync();
             var command = Connection.CreateCommand();
@@ -123,7 +123,7 @@ namespace XSharpPowerTools
             {
                 var memberName = searchTerm.Trim().Substring(2).Trim();
                 if (string.IsNullOrWhiteSpace(memberName))
-                    return (null, 0);
+                    return (new(), 0);
 
                 memberName = memberName.Replace("_", @"\_");
                 memberName = memberName.ToLower().Replace("*", "%");
