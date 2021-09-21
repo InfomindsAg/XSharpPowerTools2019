@@ -83,6 +83,11 @@ namespace XSharpPowerTools.View.Windows
 
         protected override async void OnTextChanged()
         {
+            await DoSearchAsync();
+        }
+
+        private async Task DoSearchAsync()
+        {
             await XSharpPowerToolsPackage.Instance.JoinableTaskFactory.SwitchToMainThreadAsync();
             await Dispatcher.Invoke(async delegate
             {
