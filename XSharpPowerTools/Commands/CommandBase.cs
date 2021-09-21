@@ -70,7 +70,7 @@ namespace XSharpPowerTools.Commands
             return solution != null && await ChildrenContainXsProjectAsync(solution.Children);
         }
 
-        private static async Task<bool> ChildrenContainXsProjectAsync(IEnumerable<SolutionItem?> children)
+        private static async Task<bool> ChildrenContainXsProjectAsync(IEnumerable<SolutionItem> children)
         {
             foreach(var child in children) 
             {
