@@ -81,20 +81,17 @@ namespace XSharpPowerTools.View.Windows
             }
         }
 
-        protected override async void OnTextChanged()
+        protected override void OnTextChanged()
         {
-            await DoSearchAsync();
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.Run(() => DoSearchAsync());
         }
 
         private async Task DoSearchAsync()
         {
             await XSharpPowerToolsPackage.Instance.JoinableTaskFactory.SwitchToMainThreadAsync();
-            await Dispatcher.Invoke(async delegate
-            {
-                var searchTerm = SearchTextBox.Text.Trim();
-                if (!string.IsNullOrEmpty(searchTerm))
-                    await SearchAsync(searchTerm);
-            });
+            var searchTerm = SearchTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(searchTerm))
+                await SearchAsync(searchTerm);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -124,7 +121,7 @@ namespace XSharpPowerTools.View.Windows
         private void SearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) =>
             AllowReturn = false;
 
-        public void OnReturn(object selectedItem) 
+        public void OnReturn(object selectedItem)
         {
             if (AllowReturn)
             {

@@ -69,8 +69,8 @@ namespace XSharpPowerTools.View.Windows
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
 
-            var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::") 
-                ? await DocumentHelper.GetCurrentFileAsync() 
+            var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")
+                ? await DocumentHelper.GetCurrentFileAsync()
                 : null;
             var (results, resultType) = await XSModel.GetSearchTermMatchesAsync(searchTerm, SolutionDirectory, currentFile);
 
@@ -94,12 +94,12 @@ namespace XSharpPowerTools.View.Windows
                 return;
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-            try 
+            try
             {
                 await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
                 Close();
             }
-            finally 
+            finally
             {
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             }
@@ -152,20 +152,17 @@ namespace XSharpPowerTools.View.Windows
         private void HelpButton_Click(object sender, RoutedEventArgs e) =>
             HelpControl.Visibility = HelpControl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
 
-        protected override async void OnTextChanged()
+        protected override void OnTextChanged()
         {
-            await DoSearchAsync();
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.Run(() => DoSearchAsync());
         }
 
         private async Task DoSearchAsync()
         {
             await XSharpPowerToolsPackage.Instance.JoinableTaskFactory.SwitchToMainThreadAsync();
-            await Dispatcher.Invoke(async delegate
-            {
-                var searchTerm = SearchTextBox.Text.Trim();
-                if (!string.IsNullOrEmpty(searchTerm))
-                    await SearchAsync(searchTerm);
-            });
+            var searchTerm = SearchTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(searchTerm))
+                await SearchAsync(searchTerm);
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -174,10 +171,10 @@ namespace XSharpPowerTools.View.Windows
                 DragMove();
         }
 
-        private void SearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) => 
+        private void SearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) =>
             AllowReturn = false;
 
-        public void OnReturn(object selectedItem) 
+        public void OnReturn(object selectedItem)
         {
             if (AllowReturn)
             {
