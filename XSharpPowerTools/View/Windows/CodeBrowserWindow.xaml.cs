@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Controls;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace XSharpPowerTools.View.Windows
 {
@@ -18,8 +20,9 @@ namespace XSharpPowerTools.View.Windows
     /// </summary>
     public partial class CodeBrowserWindow : BaseWindow, IResultsDataGridParent
     {
-        private readonly string SolutionDirectory;
-        private XSModelResultType DisplayedResultType;
+        readonly string SolutionDirectory;
+        XSModelResultType DisplayedResultType;
+        volatile bool SearchActive = false;
 
         public override string SearchTerm
         {
@@ -37,7 +40,7 @@ namespace XSharpPowerTools.View.Windows
             ResultsDataGrid.Parent = this;
 
             SearchTextBox.WhenTextChanged
-                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Throttle(TimeSpan.FromMilliseconds(1000))
                 .Subscribe(x => OnTextChanged());
         }
 
@@ -64,28 +67,34 @@ namespace XSharpPowerTools.View.Windows
 
         protected async Task SearchAsync(string searchTerm)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
+            if (string.IsNullOrWhiteSpace(searchTerm) || SearchActive)
                 return;
 
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+            SearchActive = true;
+            try
+            {
+                var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")
+                    ? await DocumentHelper.GetCurrentFileAsync()
+                    : null;
+                var (results, resultType) = await XSModel.GetSearchTermMatchesAsync(searchTerm, SolutionDirectory, currentFile);
 
-            var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")
-                ? await DocumentHelper.GetCurrentFileAsync()
-                : null;
-            var (results, resultType) = await XSModel.GetSearchTermMatchesAsync(searchTerm, SolutionDirectory, currentFile);
+                ResultsDataGrid.ItemsSource = results;
+                ResultsDataGrid.SelectedItem = results.FirstOrDefault();
+                SetTableColumns(resultType);
+                DisplayedResultType = resultType;
 
-            ResultsDataGrid.ItemsSource = results;
-            ResultsDataGrid.SelectedItem = results.FirstOrDefault();
-            SetTableColumns(resultType);
-            DisplayedResultType = resultType;
+                NoResultsLabel.Visibility = results.Count < 1
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
-            NoResultsLabel.Visibility = results.Count < 1
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-
-            AllowReturn = true;
-
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                AllowReturn = true;
+            }
+            finally
+            {
+                SearchActive = false;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            }
         }
 
         private async Task OpenItemAsync(XSModelResultItem item)
@@ -154,7 +163,7 @@ namespace XSharpPowerTools.View.Windows
 
         protected override void OnTextChanged()
         {
-            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.Run(() => DoSearchAsync());
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await DoSearchAsync()).FileAndForget("vs/XSharpPowerTools/CodeBrowserOnTextChange");
         }
 
         private async Task DoSearchAsync()

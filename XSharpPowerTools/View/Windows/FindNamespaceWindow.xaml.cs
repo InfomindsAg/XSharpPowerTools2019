@@ -29,7 +29,7 @@ namespace XSharpPowerTools.View.Windows
             ResultsDataGrid.Parent = this;
 
             SearchTextBox.WhenTextChanged
-                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Throttle(TimeSpan.FromMilliseconds(1000))
                 .Subscribe(x => OnTextChanged());
         }
 
