@@ -1,10 +1,8 @@
-﻿using Community.VisualStudio.Toolkit;
-using Microsoft.VisualStudio.PlatformUI;
+﻿using Microsoft.VisualStudio.PlatformUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,9 +18,11 @@ namespace XSharpPowerTools.View.Windows
     /// </summary>
     public partial class CodeBrowserWindow : BaseWindow, IResultsDataGridParent
     {
+        const string FileReference = "vs/XSharpPowerTools/CodeBrowser/";
         readonly string SolutionDirectory;
         XSModelResultType DisplayedResultType;
         volatile bool SearchActive = false;
+        volatile bool ReDoSearch = false;
 
         public override string SearchTerm
         {
@@ -40,7 +40,7 @@ namespace XSharpPowerTools.View.Windows
             ResultsDataGrid.Parent = this;
 
             SearchTextBox.WhenTextChanged
-                .Throttle(TimeSpan.FromMilliseconds(1000))
+                .Throttle(TimeSpan.FromMilliseconds(500))
                 .Subscribe(x => OnTextChanged());
         }
 
@@ -65,34 +65,41 @@ namespace XSharpPowerTools.View.Windows
             ResultsDataGrid.Columns[3].Width = new DataGridLength(9, DataGridLengthUnitType.Star);
         }
 
-        protected async Task SearchAsync(string searchTerm)
+        protected async Task SearchAsync()
         {
-            if (string.IsNullOrWhiteSpace(searchTerm) || SearchActive)
+            if (string.IsNullOrWhiteSpace(SearchTextBox.Text))
                 return;
+
+            if (SearchActive)
+            {
+                ReDoSearch = SearchActive;
+                return;
+            }
 
             using var waitCursor = new WithWaitCursor();
             SearchActive = true;
             try
             {
-                var currentFile = searchTerm.Trim().StartsWith("..") || searchTerm.Trim().StartsWith("::")
-                    ? await DocumentHelper.GetCurrentFileAsync()
-                    : null;
-                var (results, resultType) = await XSModel.GetSearchTermMatchesAsync(searchTerm, SolutionDirectory, currentFile);
+                do
+                {
+                    var searchTerm = SearchTextBox.Text.Trim();
+                    ReDoSearch = false;
+                    var currentFile = searchTerm.StartsWith("..") || searchTerm.StartsWith("::") ? await DocumentHelper.GetCurrentFileAsync() : null;
+                    var (results, resultType) = await XSModel.GetSearchTermMatchesAsync(searchTerm, SolutionDirectory, currentFile);
 
-                ResultsDataGrid.ItemsSource = results;
-                ResultsDataGrid.SelectedItem = results.FirstOrDefault();
-                SetTableColumns(resultType);
-                DisplayedResultType = resultType;
+                    ResultsDataGrid.ItemsSource = results;
+                    ResultsDataGrid.SelectedItem = results.FirstOrDefault();
+                    SetTableColumns(resultType);
+                    DisplayedResultType = resultType;
 
-                NoResultsLabel.Visibility = results.Count < 1
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                    NoResultsLabel.Visibility = results.Count < 1 ? Visibility.Visible : Visibility.Collapsed;
 
-                AllowReturn = true;
+                } while (ReDoSearch);
             }
             finally
             {
                 SearchActive = false;
+                AllowReturn = true;
             }
         }
 
@@ -119,7 +126,7 @@ namespace XSharpPowerTools.View.Windows
                     if (ResultsDataGrid.SelectedItem is XSModelResultItem item && item != null)
                         await OpenItemAsync(item);
                     else
-                        await SearchAsync(SearchTextBox.Text);
+                        await SearchAsync();
                 });
             }
             else if (e.Key == Key.Down)
@@ -138,7 +145,7 @@ namespace XSharpPowerTools.View.Windows
             {
                 _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
                 {
-                    await SearchAsync(SearchTextBox.Text);
+                    await SearchAsync();
                 });
                 SearchTextBox.CaretIndex = int.MaxValue;
             }
@@ -155,15 +162,13 @@ namespace XSharpPowerTools.View.Windows
 
         protected override void OnTextChanged()
         {
-            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await DoSearchAsync()).FileAndForget("vs/XSharpPowerTools/CodeBrowserOnTextChange");
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await DoSearchAsync()).FileAndForget($"{FileReference}OnTextChange");
         }
 
         private async Task DoSearchAsync()
         {
             await XSharpPowerToolsPackage.Instance.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var searchTerm = SearchTextBox.Text.Trim();
-            if (!string.IsNullOrEmpty(searchTerm))
-                await SearchAsync(searchTerm);
+            await SearchAsync();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -180,31 +185,32 @@ namespace XSharpPowerTools.View.Windows
             if (AllowReturn)
             {
                 var item = selectedItem as XSModelResultItem;
-                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-                {
-                    await OpenItemAsync(item);
-                });
+                XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await OpenItemAsync(item)).FileAndForget($"{FileReference}OnReturn");
             }
         }
 
         private void ResultsViewButton_Click(object sender, RoutedEventArgs e) =>
             SaveResultsToToolWindow();
 
-        private void SaveResultsToToolWindow() =>
-            _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
+        private void SaveResultsToToolWindow()
+        {
+            if (ResultsDataGrid.Items.Count < 1)
+                return;
+
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => 
             {
-                if (ResultsDataGrid.Items.Count < 1)
-                    return;
+                using (var waitCursor = new WithWaitCursor())
+                {
 
-                using var waitCursor = new WithWaitCursor();
+                    if (ResultsDataGrid.SelectedItem != null)
+                        await OpenItemAsync(ResultsDataGrid.SelectedItem as XSModelResultItem);
+                    else
+                        Close();
 
-                if (ResultsDataGrid.SelectedItem != null)
-                    await OpenItemAsync(ResultsDataGrid.SelectedItem as XSModelResultItem);
-                else
-                    Close();
-
-                var toolWindowPane = await CodeBrowserResultsToolWindow.ShowAsync();
-                (toolWindowPane.Content as ToolWindowControl).UpdateToolWindowContents(DisplayedResultType, ResultsDataGrid.ItemsSource as List<XSModelResultItem>);
-            });
+                    var toolWindowPane = await CodeBrowserResultsToolWindow.ShowAsync();
+                    (toolWindowPane.Content as ToolWindowControl).UpdateToolWindowContents(DisplayedResultType, ResultsDataGrid.ItemsSource as List<XSModelResultItem>);
+                }
+            }).FileAndForget($"{FileReference}SaveResultsToToolWindow");
+        }
     }
 }
