@@ -18,8 +18,6 @@ namespace XSharpPowerTools.Commands
     {
         public static async Task ShowBaseWindowAsync(BaseWindow window)
         {
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-
             var solution = await VS.Solutions.GetCurrentSolutionAsync();
             if (solution != null)
             {
@@ -37,20 +35,15 @@ namespace XSharpPowerTools.Commands
                     {
                         window.Close();
                         window.XSModel.CloseConnection();
-                        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                     }
                 }
                 else
                 {
-                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                     await VS.MessageBox.ShowWarningAsync("X# Code Browser", "Waiting for solution to be fully loaded.");
                 }
             }
             else
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                 await VS.MessageBox.ShowWarningAsync("X# Code Browser", "X# Code Browser is only available an opened solution.");
-            }
         }
 
         public static void BeforeQueryStatus(object sender, EventArgs e)
@@ -72,7 +65,7 @@ namespace XSharpPowerTools.Commands
 
         private static async Task<bool> ChildrenContainXsProjectAsync(IEnumerable<SolutionItem> children)
         {
-            foreach(var child in children) 
+            foreach (var child in children)
             {
                 if (child.Type == SolutionItemType.Project)
                 {
@@ -87,6 +80,6 @@ namespace XSharpPowerTools.Commands
                 }
             }
             return false;
-        } 
+        }
     }
 }

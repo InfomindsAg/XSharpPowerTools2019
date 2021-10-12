@@ -38,7 +38,7 @@ namespace XSharpPowerTools.View.Windows
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return;
 
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+            using var waitCursor = new WithWaitCursor();
 
             var results = await XSModel.GetContainingNamespaceAsync(searchTerm.Trim());
             ResultsDataGrid.ItemsSource = results;
@@ -49,8 +49,6 @@ namespace XSharpPowerTools.View.Windows
                 : Visibility.Collapsed;
 
             AllowReturn = true;
-
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
         }
 
         private async Task InsertUsingAsync(NamespaceResultItem item)

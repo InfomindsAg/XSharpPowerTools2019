@@ -70,7 +70,7 @@ namespace XSharpPowerTools.View.Windows
             if (string.IsNullOrWhiteSpace(searchTerm) || SearchActive)
                 return;
 
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+            using var waitCursor = new WithWaitCursor();
             SearchActive = true;
             try
             {
@@ -93,7 +93,6 @@ namespace XSharpPowerTools.View.Windows
             finally
             {
                 SearchActive = false;
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             }
         }
 
@@ -102,16 +101,9 @@ namespace XSharpPowerTools.View.Windows
             if (item == null)
                 return;
 
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-            try
-            {
-                await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
-                Close();
-            }
-            finally
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-            }
+            using var waitCursor = new WithWaitCursor();
+            await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
+            Close();
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -204,7 +196,7 @@ namespace XSharpPowerTools.View.Windows
                 if (ResultsDataGrid.Items.Count < 1)
                     return;
 
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+                using var waitCursor = new WithWaitCursor();
 
                 if (ResultsDataGrid.SelectedItem != null)
                     await OpenItemAsync(ResultsDataGrid.SelectedItem as XSModelResultItem);
@@ -213,8 +205,6 @@ namespace XSharpPowerTools.View.Windows
 
                 var toolWindowPane = await CodeBrowserResultsToolWindow.ShowAsync();
                 (toolWindowPane.Content as ToolWindowControl).UpdateToolWindowContents(DisplayedResultType, ResultsDataGrid.ItemsSource as List<XSModelResultItem>);
-
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             });
     }
 }

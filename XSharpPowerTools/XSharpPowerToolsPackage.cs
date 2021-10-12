@@ -6,6 +6,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using XSharpPowerTools.Commands;
+using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Windows;
 using Task = System.Threading.Tasks.Task;
 
@@ -25,7 +26,7 @@ namespace XSharpPowerTools
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+            using var waitCursor = new WithWaitCursor();
 
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await CodeBrowserCommand.InitializeAsync(this);
@@ -36,8 +37,6 @@ namespace XSharpPowerTools
             var operationProgress = await VS.GetServiceAsync<SVsOperationProgress, IVsOperationProgressStatusService>();
             IVsOperationProgressStageStatus intellisenseStatus = operationProgress.GetStageStatus(CommonOperationProgressStageIds.Intellisense);
             await intellisenseStatus.WaitForCompletionAsync();
-
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
         }
     }
 }
