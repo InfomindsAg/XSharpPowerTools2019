@@ -1,18 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using XSharpPowerTools.Helpers;
 
 namespace XSharpPowerTools.View.Controls
@@ -25,6 +17,8 @@ namespace XSharpPowerTools.View.Controls
     /// </summary>
     public partial class ToolWindowControl : UserControl, IResultsDataGridParent
     {
+        const string FileReference = "vs/XSharpPowerTools/ToolWindowControl/";
+
         public ToolWindowControl()
         {
             InitializeComponent();
@@ -36,10 +30,7 @@ namespace XSharpPowerTools.View.Controls
             if (selectedItem == null)
                 return;
             var item = selectedItem as XSModelResultItem;
-            _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-            {
-                await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line);
-            });
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await DocumentHelper.OpenProjectItemAtAsync(item.ContainingFile, item.Line)).FileAndForget($"{FileReference}OnReturn");
         }
 
         public void UpdateToolWindowContents(XSModelResultType resultType, List<XSModelResultItem> results)

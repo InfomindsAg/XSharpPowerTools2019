@@ -1,7 +1,5 @@
 ﻿using Community.VisualStudio.Toolkit;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +14,8 @@ namespace XSharpPowerTools.Commands
 {
     public static class CommandBase
     {
+        const string FileReference = "vs/XSharpPowerTools/CommandBase/";
+
         public static async Task ShowBaseWindowAsync(BaseWindow window)
         {
             var solution = await VS.Solutions.GetCurrentSolutionAsync();
@@ -49,12 +49,7 @@ namespace XSharpPowerTools.Commands
         public static void BeforeQueryStatus(object sender, EventArgs e)
         {
             if (sender is OleMenuCommand menuCommand)
-            {
-                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-                {
-                    menuCommand.Enabled = await ActiveSolutionContainsXsProjectAsync();
-                });
-            }
+                XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => menuCommand.Enabled = await ActiveSolutionContainsXsProjectAsync()).FileAndForget($"{FileReference}BeforeQueryStatus");
         }
 
         private static async Task<bool> ActiveSolutionContainsXsProjectAsync()

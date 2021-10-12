@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Controls;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace XSharpPowerTools.View.Windows
 {
@@ -14,6 +15,8 @@ namespace XSharpPowerTools.View.Windows
     /// </summary>
     public partial class FindNamespaceWindow : BaseWindow, IResultsDataGridParent
     {
+        const string FileReference = "vs/XSharpPowerTools/FindNamespace/";
+
         public override string SearchTerm
         {
             set
@@ -64,10 +67,7 @@ namespace XSharpPowerTools.View.Windows
             if (AllowReturn && e.Key == Key.Return)
             {
                 var item = ResultsDataGrid.SelectedItem as NamespaceResultItem;
-                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-                {
-                    await InsertUsingAsync(item);
-                });
+                XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await InsertUsingAsync(item)).FileAndForget($"{FileReference}Window_PreviewKeyDown");
             }
             else if (e.Key == Key.Down)
             {
@@ -81,7 +81,7 @@ namespace XSharpPowerTools.View.Windows
 
         protected override void OnTextChanged()
         {
-            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.Run(() => DoSearchAsync());
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await DoSearchAsync()).FileAndForget($"{FileReference}OnTextChanged");
         }
 
         private async Task DoSearchAsync()
