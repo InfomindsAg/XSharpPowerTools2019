@@ -1,7 +1,5 @@
 ﻿using Community.VisualStudio.Toolkit;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,10 +14,10 @@ namespace XSharpPowerTools.Commands
 {
     public static class CommandBase
     {
+        const string FileReference = "vs/XSharpPowerTools/CommandBase/";
+
         public static async Task ShowBaseWindowAsync(BaseWindow window)
         {
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-
             var solution = await VS.Solutions.GetCurrentSolutionAsync();
             if (solution != null)
             {
@@ -37,31 +35,21 @@ namespace XSharpPowerTools.Commands
                     {
                         window.Close();
                         window.XSModel.CloseConnection();
-                        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                     }
                 }
                 else
                 {
-                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                     await VS.MessageBox.ShowWarningAsync("X# Code Browser", "Waiting for solution to be fully loaded.");
                 }
             }
             else
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
                 await VS.MessageBox.ShowWarningAsync("X# Code Browser", "X# Code Browser is only available an opened solution.");
-            }
         }
 
         public static void BeforeQueryStatus(object sender, EventArgs e)
         {
             if (sender is OleMenuCommand menuCommand)
-            {
-                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-                {
-                    menuCommand.Enabled = await ActiveSolutionContainsXsProjectAsync();
-                });
-            }
+                XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => menuCommand.Enabled = await ActiveSolutionContainsXsProjectAsync()).FileAndForget($"{FileReference}BeforeQueryStatus");
         }
 
         private static async Task<bool> ActiveSolutionContainsXsProjectAsync()
@@ -70,9 +58,9 @@ namespace XSharpPowerTools.Commands
             return solution != null && await ChildrenContainXsProjectAsync(solution.Children);
         }
 
-        private static async Task<bool> ChildrenContainXsProjectAsync(IEnumerable<SolutionItem?> children)
+        private static async Task<bool> ChildrenContainXsProjectAsync(IEnumerable<SolutionItem> children)
         {
-            foreach(var child in children) 
+            foreach (var child in children)
             {
                 if (child.Type == SolutionItemType.Project)
                 {
@@ -87,6 +75,6 @@ namespace XSharpPowerTools.Commands
                 }
             }
             return false;
-        } 
+        }
     }
 }

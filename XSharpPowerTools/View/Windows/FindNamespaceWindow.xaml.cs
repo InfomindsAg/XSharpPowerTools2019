@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using XSharpPowerTools.Helpers;
 using XSharpPowerTools.View.Controls;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace XSharpPowerTools.View.Windows
 {
@@ -14,6 +15,8 @@ namespace XSharpPowerTools.View.Windows
     /// </summary>
     public partial class FindNamespaceWindow : BaseWindow, IResultsDataGridParent
     {
+        const string FileReference = "vs/XSharpPowerTools/FindNamespace/";
+
         public override string SearchTerm
         {
             set
@@ -29,7 +32,7 @@ namespace XSharpPowerTools.View.Windows
             ResultsDataGrid.Parent = this;
 
             SearchTextBox.WhenTextChanged
-                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Throttle(TimeSpan.FromMilliseconds(1000))
                 .Subscribe(x => OnTextChanged());
         }
 
@@ -38,7 +41,7 @@ namespace XSharpPowerTools.View.Windows
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return;
 
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+            using var waitCursor = new WithWaitCursor();
 
             var results = await XSModel.GetContainingNamespaceAsync(searchTerm.Trim());
             ResultsDataGrid.ItemsSource = results;
@@ -49,8 +52,6 @@ namespace XSharpPowerTools.View.Windows
                 : Visibility.Collapsed;
 
             AllowReturn = true;
-
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
         }
 
         private async Task InsertUsingAsync(NamespaceResultItem item)
@@ -66,10 +67,7 @@ namespace XSharpPowerTools.View.Windows
             if (AllowReturn && e.Key == Key.Return)
             {
                 var item = ResultsDataGrid.SelectedItem as NamespaceResultItem;
-                _ = XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async delegate
-                {
-                    await InsertUsingAsync(item);
-                });
+                XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await InsertUsingAsync(item)).FileAndForget($"{FileReference}Window_PreviewKeyDown");
             }
             else if (e.Key == Key.Down)
             {
@@ -81,15 +79,17 @@ namespace XSharpPowerTools.View.Windows
             }
         }
 
-        protected override async void OnTextChanged()
+        protected override void OnTextChanged()
+        {
+            XSharpPowerToolsPackage.Instance.JoinableTaskFactory.RunAsync(async () => await DoSearchAsync()).FileAndForget($"{FileReference}OnTextChanged");
+        }
+
+        private async Task DoSearchAsync()
         {
             await XSharpPowerToolsPackage.Instance.JoinableTaskFactory.SwitchToMainThreadAsync();
-            await Dispatcher.Invoke(async delegate
-            {
-                var searchTerm = SearchTextBox.Text.Trim();
-                if (!string.IsNullOrEmpty(searchTerm))
-                    await SearchAsync(searchTerm);
-            });
+            var searchTerm = SearchTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(searchTerm))
+                await SearchAsync(searchTerm);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -119,7 +119,7 @@ namespace XSharpPowerTools.View.Windows
         private void SearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) =>
             AllowReturn = false;
 
-        public void OnReturn(object selectedItem) 
+        public void OnReturn(object selectedItem)
         {
             if (AllowReturn)
             {

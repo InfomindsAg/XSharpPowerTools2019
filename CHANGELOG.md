@@ -1,5 +1,9 @@
 # Change log
 
+## 1.5
+
+- BugFix for Crash, when searching for ..
+
 ## 1.4
 
 - Find Namespace tool bug fix
