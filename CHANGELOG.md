@@ -2,7 +2,7 @@
 
 ## 1.5
 
-- BugFix for Crash, when searching for ..
+- BugFix for Crash, that happend, when searching for ..
 
 ## 1.4
 
