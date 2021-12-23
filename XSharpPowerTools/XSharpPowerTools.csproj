@@ -136,7 +136,7 @@
       <Version>16.10.31321.278</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Validation">
-      <Version>16.10.34</Version>
+      <Version>16.10.35</Version>
     </PackageReference>
     <PackageReference Include="System.Reactive">
       <Version>5.0.0</Version>

@@ -33,7 +33,7 @@ namespace XSharpPowerTools.View.Windows
 
             SearchTextBox.WhenTextChanged
                 .Throttle(TimeSpan.FromMilliseconds(1000))
-                .Subscribe(x => OnTextChanged());
+                .Subscribe(_ => OnTextChanged());
         }
 
         private async Task SearchAsync(string searchTerm)
